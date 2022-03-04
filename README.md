@@ -4,6 +4,8 @@ Quickly change files and ICONS on the desktop after switching desktops using Win
 
 在使用 win+tab 或者 ctrl+win+←/→ 切换虚拟桌面之后，切换绑定的桌面图标。
 
+[使用的库](https://github.com/Grabacr07/VirtualDesktop)  [核心代码来自](https://www.codeproject.com/Articles/639486/Save-and-Restore-Icon-Positions-on-Desktop?msg=5864404#xx5864404xx) 感谢
+
 ## 注意事项
 
 - 该程序只会修改程序目录下的文件，不会删除和增加你其他地方的任何文件。
