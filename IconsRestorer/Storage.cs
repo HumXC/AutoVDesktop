@@ -9,8 +9,14 @@ namespace AutoVDesktop.IconsRestorer
 {
     internal class Storage
     {
-        public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues)
+        public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
         {
+            System.Console.WriteLine("开始保存图标位置: " + fileName);
+            foreach (var position in iconPositions)
+            {
+                Console.WriteLine($"in Desktop: {position.Name} ({position.X},{position.Y})");
+
+            }
             var xDoc = new XDocument(
                 new XElement("Desktop",
                     new XElement("Icons",
@@ -22,116 +28,78 @@ namespace AutoVDesktop.IconsRestorer
                         registryValues.Select(p => new XElement("Value",
                             new XElement("Name", new XCData(p.Key)),
                             new XElement("Data", new XCData(p.Value)))))));
-
-            using ( var storage = IsolatedStorageFile.GetUserStoreForAssembly())
+            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops",fileName + ".xml");
+            if (File.Exists(filePath))
             {
-                
-                if (storage.FileExists("Desktop"))
-                { storage.DeleteFile("Desktop"); }
-
-                using (var stream = storage.CreateFile("Desktop"))
+                File.Delete(filePath);
+            }
+            else
+            {
+               if (!Directory.Exists(Path.GetDirectoryName(filePath)))
                 {
-                    using (var writer = XmlWriter.Create(stream))
-                    {
-                        xDoc.WriteTo(writer);
-                    }
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 }
             }
+            using (Stream outStream = File.OpenWrite(filePath))
+            {
+                using (var writer = XmlWriter.Create(outStream))
+                {
+                    xDoc.WriteTo(writer);
+                }
+            }
+
         }
-        //重写添加保存名称参数
-        public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues,string fileName)
+        //测试用重写
+
+        public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
+            System.Console.WriteLine("开始保存图标位置: "+fileName);
+            foreach (var position in iconPositions)
+            {
+                Console.WriteLine($"in Desktop: {position.Name} ({position.X},{position.Y})");
+
+            }
             var xDoc = new XDocument(
                 new XElement("Desktop",
                     new XElement("Icons",
                         iconPositions.Select(p => new XElement("Icon",
                             new XAttribute("x", p.X),
                             new XAttribute("y", p.Y),
-                            new XText(p.Name)))),
-                    new XElement("Registry",
-                        registryValues.Select(p => new XElement("Value",
-                            new XElement("Name", new XCData(p.Key)),
-                            new XElement("Data", new XCData(p.Value)))))));
-
-            using (var storage = IsolatedStorageFile.GetUserStoreForAssembly())
+                            new XText(p.Name))))));
+            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops",fileName + ".xml");
+            if (File.Exists(filePath))
             {
-
-                if (storage.FileExists(fileName))
-                { storage.DeleteFile(fileName); }
-
-                using (var stream = storage.CreateFile(fileName))
+                File.Delete(filePath);
+            }
+            using (Stream outStream = File.OpenWrite(filePath))
+            {
+                using (var writer = XmlWriter.Create(outStream))
                 {
-                    using (var writer = XmlWriter.Create(stream))
-                    {
-                        xDoc.WriteTo(writer);
-                    }
+                    xDoc.WriteTo(writer);
                 }
             }
+
         }
 
-        public IEnumerable<NamedDesktopPoint> GetIconPositions()
-        {
-            using (var storage = IsolatedStorageFile.GetUserStoreForAssembly())
-            {
-                if (storage.FileExists("Desktop") == false)
-                { return new NamedDesktopPoint[0]; }
-
-                using (var stream = storage.OpenFile("Desktop", FileMode.Open))
-                {
-                    using (var reader = XmlReader.Create(stream))
-                    {
-                        var xDoc = XDocument.Load(reader);
-
-                        return xDoc.Root.Element("Icons").Elements("Icon")
-                            .Select(el => new NamedDesktopPoint(el.Value, int.Parse(el.Attribute("x").Value), int.Parse(el.Attribute("y").Value)))
-                            .ToArray();
-                    }
-                }
-            }
-        }
-        //重写添加文件名参数
         public IEnumerable<NamedDesktopPoint> GetIconPositions(string fileName)
         {
-            using (var storage = IsolatedStorageFile.GetUserStoreForAssembly())
+            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase,"Desktops", fileName + ".xml");
+            if (File.Exists(filePath) == false)
             {
-                if (storage.FileExists(fileName) == false)
-                { return new NamedDesktopPoint[0]; }
-
-                using (var stream = storage.OpenFile(fileName, FileMode.Open))
+                return new NamedDesktopPoint[0];
+            }
+            using (Stream inStream = File.OpenRead(filePath))
+            {
+                using (var reader = XmlReader.Create(inStream))
                 {
-                    using (var reader = XmlReader.Create(stream))
-                    {
-                        var xDoc = XDocument.Load(reader);
-
-                        return xDoc.Root.Element("Icons").Elements("Icon")
-                            .Select(el => new NamedDesktopPoint(el.Value, int.Parse(el.Attribute("x").Value), int.Parse(el.Attribute("y").Value)))
-                            .ToArray();
-                    }
+                    var xDoc = XDocument.Load(reader);
+                    return xDoc.Root.Element("Icons").Elements("Icon")
+                        .Select(el => new NamedDesktopPoint(el.Value, int.Parse(el.Attribute("x").Value), int.Parse(el.Attribute("y").Value)))
+                        .ToArray();
                 }
             }
         }
 
-        public IDictionary<string, string> GetRegistryValues()
-        {
-            using (var storage = IsolatedStorageFile.GetUserStoreForAssembly())
-            {
-                if (storage.FileExists("Desktop") == false)
-                { return new Dictionary<string, string>(); }
-
-                using (var stream = storage.OpenFile("Desktop", FileMode.Open))
-                {
-                    using (var reader = XmlReader.Create(stream))
-                    {
-                        var xDoc = XDocument.Load(reader);
-
-                        return xDoc.Root.Element("Registry").Elements("Value")
-                            .ToDictionary(el => el.Element("Name").Value, el => el.Element("Data").Value);
-                    }
-                }
-            }
-        }
-
-        //重写添加文件名参数
         public IDictionary<string, string> GetRegistryValues(string fileName)
         {
             using (var storage = IsolatedStorageFile.GetUserStoreForAssembly())

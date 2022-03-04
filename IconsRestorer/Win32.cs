@@ -24,15 +24,7 @@ namespace AutoVDesktop.IconsRestorer
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-        [DllImport("shell32.dll")]
-        private extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, IntPtr token, [MarshalAs(UnmanagedType.LPWStr)] string path);
 
-        public static void changeDesktopPath(string fullPath)
-        {
-            IntPtr currentUserToken = WindowsIdentity.GetCurrent().Token;
-            _ = SHSetKnownFolderPath(ref KnownFolder.Desktop, (uint)0, currentUserToken,fullPath);
-
-        }
         public enum DesktopWindow
         {
             ProgMan,
@@ -51,8 +43,17 @@ namespace AutoVDesktop.IconsRestorer
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
         
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);        
-        
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        [DllImport("shell32.dll")]
+        private extern static int SHSetKnownFolderPath(ref Guid folderId, uint flags, IntPtr token, [MarshalAs(UnmanagedType.LPWStr)] string path);
+
+        public static void ChangeDesktopFolder(string fullPath)
+        {
+            IntPtr currentUserToken = WindowsIdentity.GetCurrent().Token;
+            _ = SHSetKnownFolderPath(ref KnownFolder.Desktop, (uint)0, currentUserToken, fullPath);
+             _ = SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
+        }
         public static IntPtr GetDesktopWindow(DesktopWindow desktopWindow)
         {
             IntPtr _ProgMan = GetShellWindow();
@@ -293,5 +294,4 @@ namespace AutoVDesktop.IconsRestorer
         public IntPtr piColFmt;
         public Int32 iGroup;
     }
-
 }

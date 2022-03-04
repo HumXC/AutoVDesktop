@@ -11,7 +11,7 @@ namespace AutoVDesktop.IconsRestorer
     {
         private const string KeyName = @"Software\Microsoft\Windows\Shell\Bags\1\Desktop";
 
-        private readonly BinaryFormatter _formatter = new BinaryFormatter();
+        private readonly BinaryFormatter _formatter = new();
 
         public IDictionary<string, string> GetRegistryValues()
         {

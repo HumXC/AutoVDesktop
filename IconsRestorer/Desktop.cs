@@ -27,17 +27,15 @@ namespace AutoVDesktop.IconsRestorer
                 _currentIconsOrder.Add(child.Current.Name);
             }
         }
-        //获取图标数量
+
         private int GetIconsNumber()
         {
             return (int)Win32.SendMessage(_desktopHandle, Win32.LVM_GETITEMCOUNT, IntPtr.Zero, IntPtr.Zero);
         }
 
-        //获取图标位置的数组
         public NamedDesktopPoint[] GetIconsPositions()
         {
-            uint desktopProcessId;
-            Win32.GetWindowThreadProcessId(_desktopHandle, out desktopProcessId);
+            _ = Win32.GetWindowThreadProcessId(_desktopHandle, out uint desktopProcessId);
 
             IntPtr desktopProcessHandle = IntPtr.Zero;
             try
@@ -73,12 +71,13 @@ namespace AutoVDesktop.IconsRestorer
             }
 
         }
-
+     
         private NamedDesktopPoint[] GetIconsPositions(IntPtr desktopProcessHandle, IntPtr sharedMemoryPointer)
         {
             var listOfPoints = new LinkedList<NamedDesktopPoint>();
 
             var numberOfIcons = GetIconsNumber();
+            Console.WriteLine("桌面图标个数: " + numberOfIcons);
 
             for (int itemIndex = 0; itemIndex < numberOfIcons; itemIndex++)
             {
@@ -96,45 +95,45 @@ namespace AutoVDesktop.IconsRestorer
                     Marshal.UnsafeAddrOfPinnedArrayElement(points, 0),
                     Marshal.SizeOf(typeof(DesktopPoint)),
                     ref numberOfBytes);
-                var point = points[0];
 
+                var point = points[0];
                 try
                 {
-
                     listOfPoints.AddLast(new NamedDesktopPoint(_currentIconsOrder[itemIndex], point.X, point.Y));
 
                 }
                 catch (Exception e)
                 {
 
-                    System.Console.WriteLine(e.Message);
-                    continue;
+                    Console.WriteLine(e.Message + " index = " + itemIndex);
+                    Console.WriteLine(listOfPoints.Count);
                 }
             }
 
             return listOfPoints.ToArray();
         }
 
-        //设置图标位置
         public void SetIconPositions(IEnumerable<NamedDesktopPoint> iconPositions)
         {
+
+
             foreach (var position in iconPositions)
             {
+                Console.WriteLine($"in File: {position.Name} ({position.X},{position.Y})");
                 var iconIndex = _currentIconsOrder.IndexOf(position.Name);
                 if (iconIndex == -1)
                 { continue; }
+
                 Win32.SendMessage(_desktopHandle, Win32.LVM_SETITEMPOSITION, iconIndex, Win32.MakeLParam(position.X, position.Y));
             }
         }
 
         public void Refresh()
         {
-       
-            Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);
-            Win32.SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
+            //使用F5刷新会导致图标错位
+            //Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);
 
-
-
+            _ = Win32.SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
         }
     }
 }
