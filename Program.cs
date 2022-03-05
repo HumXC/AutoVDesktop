@@ -17,7 +17,7 @@ namespace AutoVDesktop
 
         public class Config
         {
-            public string[] Desktops { get; set; } = new string[] { "Desktop" };
+            public string[] Desktops { get; set; } = Array.Empty<string>();
             public int Delay { get; set; } = 1000;
             public bool RestoreIcon { get; set; } = true;
             public bool ShowNotifyIcon { get; set; } = true;
@@ -159,7 +159,7 @@ namespace AutoVDesktop
                 MessageBox.Show("没有检测到配置文件，你可能是第一次运行，你可以在通知栏找到程序图标，右键可以打开选项窗口");
                 ReConfig();
                 new Info().Show();
-                return new Config();
+                return ReConfig();
             }
             string jsonString = File.ReadAllText(configPath);
             try
@@ -172,26 +172,32 @@ namespace AutoVDesktop
                 if (MessageBox.Show("配置文件解析失败,请修改配置文件或者重新生成:\n是否重新生成配置文件?", "配置文件错误",
         MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
-                    ReConfig();
+                 return     ReConfig();
                 }
                 else
                 {
                     System.Environment.Exit(0);
                 }
             }
-
-            return new Config();
+            MessageBox.Show("出现未知的配置加载错误，将退出", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            System.Environment.Exit(0); 
+            return null;
+            
         }
 
         //重新生成配置文件
-        static void ReConfig()
+        static Config ReConfig()
         {
             string? configPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "config.json");
   File.Delete(configPath);
             using (Stream s = File.OpenWrite(configPath))
             {
-                byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes<Config>(new Config());
+                Config c = new();
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                c.Desktops = new String[] { Path.GetFileName(path)};
+                byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes<Config>(c);
                 s.Write(jsonUtf8Bytes);
+                return c;
 
             };
 
