@@ -15,26 +15,26 @@ namespace AutoVDesktop
         ///  The main entry point for the application.
         /// </summary>
 
-        class Config
+        public class Config
         {
             public string[] Desktops { get; set; } = new string[] { "Desktop" };
             public int Delay { get; set; } = 1000;
             public bool RestoreIcon { get; set; } = true;
-            public bool ShowInTaskbar { get; set; } = true;
+            public bool ShowNotifyIcon { get; set; } = true;
             public bool DebugMode { get; set; } = false;
 
             public override string ToString()
             {
-                return $"{Desktops} {Delay} {RestoreIcon} {ShowInTaskbar} {DebugMode}";
+                return $"{Desktops} {Delay} {RestoreIcon} {ShowNotifyIcon} {DebugMode}";
 
             }
 
         }
 
-        static Config? config;
+        public static Config? config;
         private static bool locked = false;
-        public static int threadID = 0;
-        
+        private static int threadID = 0;
+
 
         private static readonly DesktopRegistry _registry = new();
         private static readonly Storage _storage = new();
@@ -45,54 +45,55 @@ namespace AutoVDesktop
         [STAThread]
         static void Main()
         {
+            ApplicationConfiguration.Initialize();
             config = GetConfig();
             Init(config);
 
             VirtualDesktop.Configure();
             VirtualDesktop.CurrentChanged += (_, args) =>
             {
-                System.Console.WriteLine("切换到桌面: " + args.NewDesktop.Name);
+                Logger.Debug("切换到桌面: " + args.NewDesktop.Name);
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                 string oldDesktopName = Path.GetFileName(path);
-                while (locked)
-                {
-                    System.Console.WriteLine($"线程{threadID}: 锁等待...");
-                    Thread.Sleep(100);
-                }
 
+                SpinWait.SpinUntil(() =>
+                {
+                    Logger.Debug($"线程{threadID}: 锁等待...");
+                    return !locked;
+                }, 50);
                 new Thread(() =>
-                 {
-                     ChangeDesktopThread(args, threadID);
-                 }).Start();
-                threadID++;
+                                  {
+                                      ChangeDesktopThread(args, threadID);
+                                  })
+                {
+                    IsBackground = true,
+                    Name = threadID.ToString()
+                }.Start();
+                ++threadID;
             };
 
+            Application.Run(new OptionView());
 
-            while (true)
-            {
-                /*         SpinWait.SpinUntil(() =>
-                         {
-                             return false;
-                         }, 40960);*/
-              System.Console.ReadKey();
-            }
         }
 
         public static void ChangeDesktopThread(VirtualDesktopChangedEventArgs args, int _threadID)
         {
-            System.Console.WriteLine($"线程{_threadID}: 开始运行...");
+            Logger.Debug($"线程{_threadID}: 开始运行...");
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             string oldDesktopName = Path.GetFileName(path);
             string? desktopPath = Path.GetDirectoryName(path);
             Thread.Sleep(config.Delay);
+            locked = true;
             if (threadID != _threadID)
             {
-                System.Console.WriteLine($"线程{_threadID}: 运行中断,因为在等待时有新的进程...");
+                Logger.Debug($"线程{_threadID}: 运行中断,因为在等待时有新的进程...");
+                locked = false;
                 return;
             }
             if (args.NewDesktop.Name.Equals(oldDesktopName))
             {
-                System.Console.WriteLine($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
+                Logger.Debug($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
+                locked = false;
                 return;
             }
 
@@ -102,14 +103,17 @@ namespace AutoVDesktop
                 {
                     if (item.Equals(args.NewDesktop.Name))
                     {
-
-                        locked = true;
+                        var fullNewDesktopPath = Path.Combine(desktopPath, args.NewDesktop.Name);
+                        if (!Directory.Exists(fullNewDesktopPath))
+                        {
+                            Directory.CreateDirectory(fullNewDesktopPath);
+                        }
                         SaveIcon(oldDesktopName);
-                        Win32.ChangeDesktopFolder(Path.Combine(desktopPath, args.NewDesktop.Name));
+                        Win32.ChangeDesktopFolder(fullNewDesktopPath);
                         SetIcon(args.NewDesktop.Name);
                         threadID = 0;
+                        Logger.Debug($"线程{_threadID}: 运行完毕...");
                         locked = false;
-                        System.Console.WriteLine($"线程{_threadID}: 运行完毕...");
                         return;
                     }
                 }
@@ -145,9 +149,10 @@ namespace AutoVDesktop
 
             if (File.Exists(configPath) == false)
             {
-                MessageBox.Show("配置文件不存在,已重新生成.请先编辑后再运行.", "配置文件不存在", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("没有检测到配置文件，你可能是第一次运行，你可以在通知栏找到程序图标，右键可以打开选项窗口");
                 ReConfig();
-                System.Environment.Exit(0);
+                new Info().Show();
+                return new Config();
             }
             string jsonString = File.ReadAllText(configPath);
             try
@@ -161,7 +166,6 @@ namespace AutoVDesktop
         MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
                     ReConfig();
-                    System.Environment.Exit(0);
                 }
                 else
                 {
@@ -176,21 +180,27 @@ namespace AutoVDesktop
         static void ReConfig()
         {
             string? configPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "config.json");
-
+  File.Delete(configPath);
             using (Stream s = File.OpenWrite(configPath))
             {
-
-                var c = new Config();
-                byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes<Config>(c);
+                byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes<Config>(new Config());
                 s.Write(jsonUtf8Bytes);
-                Process p = new();
-                p.StartInfo.FileName = "explorer.exe";
-                p.StartInfo.Arguments = " /select, " + configPath;
-                p.Start();
+
             };
 
         }
+        //保存配置
+       public static void SaveConfig()
+        {
+            string? configPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "config.json");
+            File.Delete(configPath);
+            using (Stream s = File.OpenWrite(configPath))
+            {
+                byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes<Config>(config);
+                s.Write(jsonUtf8Bytes);
+            };
 
+        }
         //初始化,检查配置文件
         static void Init(Config config)
         {
@@ -205,19 +215,21 @@ namespace AutoVDesktop
                     System.Environment.Exit(0);
                 }
             }
-            if (config.ShowInTaskbar)
-            {
-                 new NotifyIcon
-                {
-                    Icon = Properties.Resources.Icon,
-                    Visible = true,
-                    Text = "AutoVDesktop\n点我没用的,想关的话自己去任务管理器找我吧"
-                };
-            }
             if (config.DebugMode)
             {
                 AllocConsole();
-                System.Console.WriteLine("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
+                Logger.Debug("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
+            }
+            if (config.Delay < 1)
+            {
+                config.Delay = 1000;
+            }
+        }
+        public static class Logger
+        {
+            public static void Debug(string msg)
+            {
+                if (config.DebugMode == true) { System.Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {msg}"); }
             }
         }
     }

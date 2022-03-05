@@ -9,6 +9,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject>AutoVDesktop.Program</StartupObject>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

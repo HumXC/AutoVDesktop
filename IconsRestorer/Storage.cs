@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.IO.IsolatedStorage;
-using System.Linq;
+﻿using System.IO.IsolatedStorage;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -11,7 +8,7 @@ namespace AutoVDesktop.IconsRestorer
     {
         public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
         {
-            System.Console.WriteLine("开始保存图标位置: " + fileName);
+            Program.Logger.Debug("开始保存图标位置: " + fileName);
             foreach (var position in iconPositions)
             {
                 Console.WriteLine($"in Desktop: {position.Name} ({position.X},{position.Y})");
@@ -53,7 +50,7 @@ namespace AutoVDesktop.IconsRestorer
 
         public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
-            System.Console.WriteLine("开始保存图标位置: "+fileName);
+            Program.Logger.Debug("开始保存图标位置: "+fileName);
             foreach (var position in iconPositions)
             {
                 Console.WriteLine($"in Desktop: {position.Name} ({position.X},{position.Y})");

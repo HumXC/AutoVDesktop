@@ -50,6 +50,7 @@ namespace AutoVDesktop.IconsRestorer
 
         public static void ChangeDesktopFolder(string fullPath)
         {
+
             IntPtr currentUserToken = WindowsIdentity.GetCurrent().Token;
             _ = SHSetKnownFolderPath(ref KnownFolder.Desktop, (uint)0, currentUserToken, fullPath);
              _ = SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
