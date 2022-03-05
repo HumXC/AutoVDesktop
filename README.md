@@ -4,7 +4,9 @@ Quickly change files and ICONS on the desktop after switching desktops using Win
 
 在使用 win+tab 或者 ctrl+win+←/→ 切换虚拟桌面之后，切换绑定的桌面图标。
 
-[使用的库](https://github.com/Grabacr07/VirtualDesktop)  [核心代码来自](https://www.codeproject.com/Articles/639486/Save-and-Restore-Icon-Positions-on-Desktop?msg=5864404#xx5864404xx) 感谢
+使用的库:[VirtualDesktop](https://github.com/Grabacr07/VirtualDesktop) 
+## 声明
+程序中实现保存和恢复桌面图标功能的代码(IconsRestorer)来自[此链接](https://www.codeproject.com/Articles/639486/Save-and-Restore-Icon-Positions-on-Desktop?msg=5864404#xx5864404xx)，我修改并使用了此段代码，IconsRestorer代码的原作者不需要对此程序产生的任何后果负责。
 
 ## 注意事项
 
@@ -20,43 +22,30 @@ Quickly change files and ICONS on the desktop after switching desktops using Win
 - Q：怎么快速切换桌面？ A：按ctrl+win+左右方向键。
 - Q：我不想用了，我想恢复回原来的桌面该怎么做？ A:  看这个链接，修改回你以前的桌面路径 [设置桌面路径](https://zhuanlan.zhihu.com/p/78243921)
 
-## 开始配置
-
-1)先运行一次，会生成配置文件。
-
-2)打开程序目录的 config。json 并编辑，默认的配置文件长这样:
+## 配置文件说明
+从1.0.0-beta版本开始加入了配置窗口，右键通知栏的程序图标可以打开“选项”来进行配置，以下是对配置文件编辑的帮助。
+程序目录下的 config.json 是程序的配置文件，默认的配置文件长这样:
 
 ```json
-{"Desktops": ["Desktop"],"Delay": 1000,"RestoreIcon": true,"ShowInTaskbar": true,"DebugMode": false}
+{"Desktops":["Desktop"],"Delay":1000,"RestoreIcon":true,"ShowNotifyIcon":true,"DebugMode":false}
 ```
+运行程序后会在程序目录下生成 Desktops 文件夹，是桌面图标的位置信息。
 
-格式化之后是这样的:
-
-```json
-{
-  "Desktops": ["Desktop"],
-  "Delay": 1000,
-  "RestoreIcon": true,
-  "ShowInTaskbar": true,
-  "DebugMode": false
-}
-```
-
-- Desktop: 这个数组记录了程序响应的桌面名称，默认只有一个"Desktop"，可以添加你想要的桌面，比如"Game"，最后会说明他是怎么工作的。
+- 桌面(Desktop): 这个数组记录了程序响应的桌面名称，默认只有一个"Desktop"，可以添加你想要的桌面，比如"Game"，最后会说明他是怎么工作的。
 
   ```json
   {
     "Desktops": ["Desktop", "Game"]
   }
   ```
-- Delay: 在切换桌面后等待的时间，默认是 1000 毫秒，即在切换桌面后等 1 秒再切换桌面，建议值为 100。
-- RestoreIcon: 切换桌面之后是否恢复图标的位置，默认开启，如果不开启的话，切换桌面之后桌面图标会重新排列。<!>注意，开启此功能后再更换桌面之前不要用 F5 刷新桌面，不然前三列的图标会有概率乱序。(标记一个 bug，但是不会修)。
-- ShowInTaskbar: 设置为 true 会在任务栏显示一个图标(只是显示，目前没啥交互)，开启之后程序会多占 10mb 左右内存呢。
-- DebugMode: 显示一个黑窗口显示输出，一般来说保持为 false 就行。
+- 响应延迟(Delay): 在切换桌面后等待的时间，默认是 1000 毫秒，即在切换桌面后等 1 秒再切换桌面，建议值为 500。
+- 恢复图标(RestoreIcon): 切换桌面之后是否恢复图标的位置，默认开启，如果不开启的话，切换桌面之后桌面图标会重新排列。<!>注意，开启此功能后再更换桌面之前不要用 F5 刷新桌面，不然前三列的图标会有概率乱序。(标记一个 bug，但是不会修)。
+- 显示通知栏图标(ShowNotifyIcon): 设置为 true 会在通知栏显示一个图标。如果设置为false将不会显示，则需要打开
+- 调试模式(DebugMode): 显示一个黑窗口显示输出，一般来说保持为 false 就行。
 
 ## 使用方式
 
-在配置完 Desktop 之后，就可以开始使用了。我在上面配置的是这样的:
+在配置完成之后，就可以开始使用了。我在上面配置的是这样的:
 
 ```json
 {
@@ -64,7 +53,7 @@ Quickly change files and ICONS on the desktop after switching desktops using Win
 }
 ```
 
-现在按下 win+tab 快捷键打开虚拟桌面界面，新建几个虚拟桌面，默认的虚拟桌面名称可能是"桌面 1"，"桌面 2"之类的，点击桌面的名字重命名，我这里设置了"Desktop"和"Game"两个虚拟桌面，所以我新建了两个虚拟桌面并分别重命名成"Desktop"和"Game"。你当然可以添加更多。
+现在按下 win+tab 快捷键打开虚拟桌面界面，新建几个虚拟桌面，默认的虚拟桌面名称可能是"桌面 1"，"桌面 2"之类的，点击桌面的名称重命名，我这里设置了"Desktop"和"Game"两个虚拟桌面，所以我新建了两个虚拟桌面并分别重命名成"Desktop"和"Game"。你当然可以添加更多。
 
 当从一个桌面切换到另一个桌面后，程序会读取当前虚拟桌面的名称，如果虚拟桌面的名称包含在配置文件的 Desktop 中，就会将桌面的路径替换到另一个文件夹。并且会保存桌面图标的布局。
 

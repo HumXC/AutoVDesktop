@@ -45,6 +45,13 @@ namespace AutoVDesktop
         [STAThread]
         static void Main()
         {
+            Process[] processes = System.Diagnostics.Process.GetProcessesByName(Application.CompanyName);
+            if (processes.Length > 1)
+            {
+                MessageBox.Show("应用程序已经在运行中。。","提示",MessageBoxButtons.OK);
+                Thread.Sleep(1000);
+                System.Environment.Exit(1);
+            }
             ApplicationConfiguration.Initialize();
             config = GetConfig();
             Init(config);
