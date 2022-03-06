@@ -51,6 +51,7 @@
             this.inputDelay = new System.Windows.Forms.TextBox();
             this.openDesktopFolder = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
+            this.startWithWindows = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,26 +70,26 @@
             this.选项ToolStripMenuItem,
             this.退出ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(210, 103);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(109, 76);
             // 
             // 关于ToolStripMenuItem
             // 
             this.关于ToolStripMenuItem.Name = "关于ToolStripMenuItem";
-            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
+            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
             this.关于ToolStripMenuItem.Text = "关于";
             this.关于ToolStripMenuItem.Click += new System.EventHandler(this.关于ToolStripMenuItem_Click);
             // 
             // 选项ToolStripMenuItem
             // 
             this.选项ToolStripMenuItem.Name = "选项ToolStripMenuItem";
-            this.选项ToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
+            this.选项ToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
             this.选项ToolStripMenuItem.Text = "选项";
             this.选项ToolStripMenuItem.Click += new System.EventHandler(this.选项ToolStripMenuItem_Click);
             // 
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
             this.退出ToolStripMenuItem.Text = "退出";
             this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
             // 
@@ -134,7 +135,7 @@
             // 
             // delDesktop
             // 
-            this.delDesktop.Location = new System.Drawing.Point(12, 351);
+            this.delDesktop.Location = new System.Drawing.Point(12, 361);
             this.delDesktop.Name = "delDesktop";
             this.delDesktop.Size = new System.Drawing.Size(159, 49);
             this.delDesktop.TabIndex = 5;
@@ -155,7 +156,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 476);
+            this.label3.Location = new System.Drawing.Point(12, 493);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(339, 40);
             this.label3.TabIndex = 7;
@@ -176,7 +177,7 @@
             // 
             this.debugMode.AutoSize = true;
             this.debugMode.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.debugMode.Location = new System.Drawing.Point(199, 218);
+            this.debugMode.Location = new System.Drawing.Point(199, 248);
             this.debugMode.Name = "debugMode";
             this.debugMode.Size = new System.Drawing.Size(97, 27);
             this.debugMode.TabIndex = 9;
@@ -185,7 +186,7 @@
             // 
             // saveConfig
             // 
-            this.saveConfig.Location = new System.Drawing.Point(199, 406);
+            this.saveConfig.Location = new System.Drawing.Point(199, 425);
             this.saveConfig.Name = "saveConfig";
             this.saveConfig.Size = new System.Drawing.Size(157, 49);
             this.saveConfig.TabIndex = 10;
@@ -197,7 +198,7 @@
             // 
             this.showNotifyIcon.AutoSize = true;
             this.showNotifyIcon.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.showNotifyIcon.Location = new System.Drawing.Point(199, 286);
+            this.showNotifyIcon.Location = new System.Drawing.Point(199, 316);
             this.showNotifyIcon.Name = "showNotifyIcon";
             this.showNotifyIcon.Size = new System.Drawing.Size(148, 27);
             this.showNotifyIcon.TabIndex = 11;
@@ -209,7 +210,7 @@
             // 
             this.restorerIcon.AutoSize = true;
             this.restorerIcon.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.restorerIcon.Location = new System.Drawing.Point(199, 251);
+            this.restorerIcon.Location = new System.Drawing.Point(199, 281);
             this.restorerIcon.Name = "restorerIcon";
             this.restorerIcon.Size = new System.Drawing.Size(131, 27);
             this.restorerIcon.TabIndex = 12;
@@ -220,7 +221,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label5.Location = new System.Drawing.Point(199, 322);
+            this.label5.Location = new System.Drawing.Point(199, 352);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(114, 23);
             this.label5.TabIndex = 13;
@@ -229,14 +230,14 @@
             // inputDelay
             // 
             this.inputDelay.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.inputDelay.Location = new System.Drawing.Point(199, 351);
+            this.inputDelay.Location = new System.Drawing.Point(199, 381);
             this.inputDelay.Name = "inputDelay";
             this.inputDelay.Size = new System.Drawing.Size(114, 29);
             this.inputDelay.TabIndex = 14;
             // 
             // openDesktopFolder
             // 
-            this.openDesktopFolder.Location = new System.Drawing.Point(12, 406);
+            this.openDesktopFolder.Location = new System.Drawing.Point(12, 425);
             this.openDesktopFolder.Name = "openDesktopFolder";
             this.openDesktopFolder.Size = new System.Drawing.Size(159, 49);
             this.openDesktopFolder.TabIndex = 15;
@@ -254,12 +255,24 @@
             this.label6.Text = "打开文件";
             this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
+            // startWithWindows
+            // 
+            this.startWithWindows.AutoSize = true;
+            this.startWithWindows.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.startWithWindows.Location = new System.Drawing.Point(199, 215);
+            this.startWithWindows.Name = "startWithWindows";
+            this.startWithWindows.Size = new System.Drawing.Size(97, 27);
+            this.startWithWindows.TabIndex = 17;
+            this.startWithWindows.Text = "开机启动";
+            this.startWithWindows.UseVisualStyleBackColor = true;
+            // 
             // OptionView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(119F, 119F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(372, 525);
+            this.ClientSize = new System.Drawing.Size(372, 543);
+            this.Controls.Add(this.startWithWindows);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.openDesktopFolder);
             this.Controls.Add(this.inputDelay);
@@ -281,7 +294,7 @@
             this.MinimizeBox = false;
             this.Name = "OptionView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "OptionView";
+            this.Text = "AutoVDesktop";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionView_FormClosing);
             this.Load += new System.EventHandler(this.OptionView_Load);
             this.Shown += new System.EventHandler(this.OptionView_Shown);
@@ -314,5 +327,6 @@
         private TextBox inputDelay;
         private Button openDesktopFolder;
         private Label label6;
+        private CheckBox startWithWindows;
     }
 }

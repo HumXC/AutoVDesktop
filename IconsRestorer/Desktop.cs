@@ -26,6 +26,7 @@ namespace AutoVDesktop.IconsRestorer
             {
                 _currentIconsOrder.Add(child.Current.Name);
             }
+            System.Console.WriteLine($"创建新的桌面对象，当前获取桌面图标个数：{_currentIconsOrder.Count}");
         }
 
         private int GetIconsNumber()
@@ -77,7 +78,7 @@ namespace AutoVDesktop.IconsRestorer
             var listOfPoints = new LinkedList<NamedDesktopPoint>();
 
             var numberOfIcons = GetIconsNumber();
-            Console.WriteLine("桌面图标个数: " + numberOfIcons);
+            Console.WriteLine("获取到当前桌面图标个数: " + numberOfIcons);
 
             for (int itemIndex = 0; itemIndex < numberOfIcons; itemIndex++)
             {
@@ -134,6 +135,11 @@ namespace AutoVDesktop.IconsRestorer
             //Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);
 
             _ = Win32.SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
+        }
+        public void F5()
+        {
+            Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);
+
         }
     }
 }

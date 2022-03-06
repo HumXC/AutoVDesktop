@@ -39,6 +39,7 @@ namespace AutoVDesktop
             {
                 desktopList.Items.Add(desktopName);
             }
+            startWithWindows.Checked = Program.config.StartWithWindows;
             inputDelay.Text = Program.config.Delay.ToString();
             debugMode.Checked = Program.config.DebugMode;
             restorerIcon.Checked = Program.config.RestoreIcon;
@@ -114,7 +115,7 @@ namespace AutoVDesktop
 
             }
 
-
+            Program.config.StartWithWindows = startWithWindows.Checked;
             Program.config.Delay = delay;
             Program.config.DebugMode = debugMode.Checked;
             Program.config.ShowNotifyIcon = showNotifyIcon.Checked;
@@ -129,6 +130,33 @@ namespace AutoVDesktop
 
             }
             Program.config.Desktops = li.ToArray();
+            //开机自启
+            Microsoft.Win32.RegistryKey RKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            var appName = Environment.ProcessPath;
+            if (appName != null)
+            {
+                var k = RKey.GetValue("AutoVDesktop");
+                if (k == null)
+                {
+                    if (Program. config.StartWithWindows)
+                        RKey.SetValue("AutoVDesktop", appName);
+                }
+                else
+                {
+                    if (Program.config.StartWithWindows)
+                    {
+                        if (!k.Equals(appName))
+                        {
+                            RKey.SetValue("AutoVDesktop", appName);
+                        }
+                    }
+                    else
+                    {
+                        RKey.DeleteValue("AutoVDesktop");
+                    }
+                }
+            }
+
             Program.SaveConfig();
             if (!Program.config.DebugMode)
             {

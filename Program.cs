@@ -22,6 +22,7 @@ namespace AutoVDesktop
             public bool RestoreIcon { get; set; } = true;
             public bool ShowNotifyIcon { get; set; } = true;
             public bool DebugMode { get; set; } = false;
+            public bool StartWithWindows { get; set; } = false;
 
             public override string ToString()
             {
@@ -32,7 +33,7 @@ namespace AutoVDesktop
         }
 
         public static Config? config;
-        private static bool locked = false;
+        private static object lockObj =new();
         private static int threadID = 0;
 
 
@@ -53,28 +54,37 @@ namespace AutoVDesktop
                 System.Environment.Exit(1);
             }
             ApplicationConfiguration.Initialize();
+            VirtualDesktop.Configure();
             config = GetConfig();
             Init(config);
 
-            VirtualDesktop.Configure();
+
+            //创建新的虚拟桌面后，如果还有配置里没创建的桌面，则重命名新桌面
+            VirtualDesktop.Created += (_,newVDesktop) =>
+            {
+                var vDesktops = VirtualDesktop.GetDesktops();
+                var vDesktopNames = new List<string>();
+                foreach (var vDesk in vDesktops)
+                {
+                   vDesktopNames.Add(vDesk.Name);
+                }
+                foreach (var desktopName in config.Desktops)
+                {     
+                    if(vDesktopNames.IndexOf(desktopName) == -1)
+                    {
+                        newVDesktop.Name = desktopName;
+                        return;
+                    }
+                }
+         
+            };
             VirtualDesktop.CurrentChanged += (_, args) =>
             {
-                Logger.Debug("切换到桌面: " + args.NewDesktop.Name);
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-                string oldDesktopName = Path.GetFileName(path);
-
-                SpinWait.SpinUntil(() =>
-                {
-                    Logger.Debug($"线程{threadID}: 锁等待...");
-                    return !locked;
-                }, 50);
-                new Thread(() =>
-                                  {
-                                      ChangeDesktopThread(args, threadID);
-                                  })
+                System.Console.WriteLine($"切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
+                new Thread(() => { ChangeDesktopThread(args, threadID); })
                 {
                     IsBackground = true,
-                    Name = threadID.ToString()
+                    Name ="切换桌面线程"+ threadID.ToString()
                 }.Start();
                 ++threadID;
             };
@@ -85,62 +95,79 @@ namespace AutoVDesktop
 
         public static void ChangeDesktopThread(VirtualDesktopChangedEventArgs args, int _threadID)
         {
-            Logger.Debug($"线程{_threadID}: 开始运行...");
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            string oldDesktopName = Path.GetFileName(path);
-            string? desktopPath = Path.GetDirectoryName(path);
             Thread.Sleep(config.Delay);
-            locked = true;
-            if (threadID != _threadID)
+            SpinWait.SpinUntil(() =>
             {
-                Logger.Debug($"线程{_threadID}: 运行中断,因为在等待时有新的进程...");
-                locked = false;
-                return;
-            }
-            if (args.NewDesktop.Name.Equals(oldDesktopName))
-            {
-                Logger.Debug($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
-                locked = false;
-                return;
-            }
-
-
-            if (config.Desktops != null && desktopPath != null)
-                foreach (var item in config.Desktops)
+                if (!Monitor.TryEnter(lockObj))
                 {
-                    if (item.Equals(args.NewDesktop.Name))
-                    {
-                        var fullNewDesktopPath = Path.Combine(desktopPath, args.NewDesktop.Name);
-                        if (!Directory.Exists(fullNewDesktopPath))
-                        {
-                            Directory.CreateDirectory(fullNewDesktopPath);
-                        }
-                        SaveIcon(oldDesktopName);
-                        Win32.ChangeDesktopFolder(fullNewDesktopPath);
-                        SetIcon(args.NewDesktop.Name);
-                        threadID = 0;
-                        Logger.Debug($"线程{_threadID}: 运行完毕...");
-                        locked = false;
-                        return;
-                    }
+                    System.Console.WriteLine($"线程{_threadID}: 等待...");
+                    return false;
                 }
+                else
+                {
+                    System.Console.WriteLine($"线程{_threadID}: 获得锁,开始运行...");
+                    if (threadID != _threadID)
+                    {
+                        System.Console.WriteLine($"线程{_threadID}: 运行中断,因为在等待时有新的进程...");
+                        Monitor.Exit(lockObj);
+                    System.Console.WriteLine($"线程{_threadID}: 解锁...");
+                        return true;
+                    }
+                    string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                    string oldDesktopName = Path.GetFileName(path);
+                    string? desktopPath = Path.GetDirectoryName(path);
+                    if (args.NewDesktop.Name.Equals(oldDesktopName))
+                    {
+                        System.Console.WriteLine($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
+                    System.Console.WriteLine($"线程{_threadID}: 解锁...");
+                        Monitor.Exit(lockObj);
+                        return true;
+                    }
+                    if (config.Desktops != null && desktopPath != null)
+                        foreach (var item in config.Desktops)
+                        {
+                            if (item.Equals(args.NewDesktop.Name))
+                            {
+                                var fullNewDesktopPath = Path.Combine(desktopPath, args.NewDesktop.Name);
+                                if (!Directory.Exists(fullNewDesktopPath))
+                                {
+                                    Directory.CreateDirectory(fullNewDesktopPath);
+                                }
+                                SaveIcon(oldDesktopName);
+                                Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                Thread.Sleep(50+(int)config.Delay/10);
+                                SetIcon(args.NewDesktop.Name);
+                                System.Console.WriteLine($"线程{_threadID}: 运行完毕...重置线程记数");
+                                threadID = 0;
+                                System.Console.WriteLine($"线程{_threadID}: 解锁...");
+                                Monitor.Exit(lockObj);
+                                return true;
+                            }
+                        }
+                    System.Console.WriteLine($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{args.NewDesktop.Name}");
+                    Monitor.Exit(lockObj);
+                    return true;
+                }
+            }, 50);
+
         }
         static void SaveIcon(string desktopName)
         {
             var desktop = new Desktop();
+            desktop.Refresh();
             var iconPositions = desktop.GetIconsPositions();
-            var registryValues = _registry.GetRegistryValues();
-            _storage.SaveIconPositions(iconPositions, registryValues, desktopName);
-
+           // var registryValues = _registry.GetRegistryValues();
+            _storage.SaveIconPositions(iconPositions, desktopName);
         }
         static void SetIcon(string desktopName)
         {
             var desktop = new Desktop();
 
-            var registryValues = _storage.GetRegistryValues(desktopName);
-            _registry.SetRegistryValues(registryValues);
+            //var registryValues = _storage.GetRegistryValues(desktopName);
+            //_registry.SetRegistryValues(registryValues);
             var iconPositions = (NamedDesktopPoint[])_storage.GetIconPositions(desktopName);
-            Console.WriteLine("开始恢复桌面图标位置: " + desktopName);
+            System. Console.WriteLine("开始恢复桌面图标位置: " + desktopName);
+           
             desktop.SetIconPositions(iconPositions);
 
             desktop.Refresh();
@@ -156,10 +183,31 @@ namespace AutoVDesktop
 
             if (File.Exists(configPath) == false)
             {
+  
                 MessageBox.Show("没有检测到配置文件，你可能是第一次运行，你可以在通知栏找到程序图标，右键可以打开选项窗口");
-                ReConfig();
+                var vDesktops = VirtualDesktop.GetDesktops();
+                var vDesktopNames = new List<string>();
+                foreach (var v in vDesktops)
+                {
+                    vDesktopNames.Add(v.Name);
+                }
                 new Info().Show();
-                return ReConfig();
+                var c =ReConfig();
+                if (c.Desktops[0]!=null)
+                {
+                    if (vDesktopNames.IndexOf(c.Desktops[0]) == -1)
+                    {
+                        if (VirtualDesktop.Current.Name.Equals(""))
+                        {
+                            VirtualDesktop.Current.Name = c.Desktops[0];
+                        }
+                        else
+                        {
+                            VirtualDesktop.Create().Name = c.Desktops[0];
+                        }
+                    }
+                }
+                return c;
             }
             string jsonString = File.ReadAllText(configPath);
             try
@@ -231,12 +279,41 @@ namespace AutoVDesktop
             if (config.DebugMode)
             {
                 AllocConsole();
-                Logger.Debug("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
+                System.Console.WriteLine("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
             }
             if (config.Delay < 1)
             {
                 config.Delay = 1000;
             }
+
+            //开机自启
+            Microsoft.Win32.RegistryKey RKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            var appName = Environment.ProcessPath;
+            if (appName != null)
+            {
+                var k = RKey.GetValue("AutoVDesktop");
+                if (k == null)
+                {
+                    if (config.StartWithWindows)
+                        RKey.SetValue("AutoVDesktop", appName);
+                }
+                else
+                {
+                    if (config.StartWithWindows)
+                    {
+                        if (!k.Equals(appName))
+                        {
+                            RKey.SetValue("AutoVDesktop", appName);
+                        }
+                    }
+                    else
+                    {
+                        RKey.DeleteValue("AutoVDesktop");
+                    }
+                }
+            }
+            
+          
         }
         public static class Logger
         {
