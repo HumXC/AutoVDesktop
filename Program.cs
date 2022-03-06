@@ -33,7 +33,7 @@ namespace AutoVDesktop
         }
 
         public static Config? config;
-        private static object lockObj =new();
+        private static readonly object lockObj =new();
         private static int threadID = 0;
 
 
@@ -80,13 +80,15 @@ namespace AutoVDesktop
             };
             VirtualDesktop.CurrentChanged += (_, args) =>
             {
-                System.Console.WriteLine($"切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
-                new Thread(() => { ChangeDesktopThread(args, threadID); })
+               Logger.Debug($"线程{threadID}: 切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
+                ThreadPool.QueueUserWorkItem((state) => { ChangeDesktopThread(args, threadID); });
+/*                new Thread()
                 {
                     IsBackground = true,
                     Name ="切换桌面线程"+ threadID.ToString()
-                }.Start();
+                }.Start();*/
                 ++threadID;
+
             };
 
             Application.Run(new OptionView());
@@ -96,32 +98,22 @@ namespace AutoVDesktop
         public static void ChangeDesktopThread(VirtualDesktopChangedEventArgs args, int _threadID)
         {
             Thread.Sleep(config.Delay);
-            SpinWait.SpinUntil(() =>
+            if (threadID != _threadID)
             {
-                if (!Monitor.TryEnter(lockObj))
+                Logger.Debug($"线程{_threadID}: 运行中断,因为在等待时有新的进程...");
+                return;
+            }
+            lock (lockObj)
                 {
-                    System.Console.WriteLine($"线程{_threadID}: 等待...");
-                    return false;
-                }
-                else
-                {
-                    System.Console.WriteLine($"线程{_threadID}: 获得锁,开始运行...");
-                    if (threadID != _threadID)
-                    {
-                        System.Console.WriteLine($"线程{_threadID}: 运行中断,因为在等待时有新的进程...");
-                        Monitor.Exit(lockObj);
-                    System.Console.WriteLine($"线程{_threadID}: 解锁...");
-                        return true;
-                    }
+                    Logger.Debug($"线程{_threadID}: 获得锁,开始运行...");
                     string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                     string oldDesktopName = Path.GetFileName(path);
                     string? desktopPath = Path.GetDirectoryName(path);
                     if (args.NewDesktop.Name.Equals(oldDesktopName))
                     {
-                        System.Console.WriteLine($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
-                    System.Console.WriteLine($"线程{_threadID}: 解锁...");
-                        Monitor.Exit(lockObj);
-                        return true;
+                        Logger.Debug($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
+                    Logger.Debug($"线程{_threadID}: 解锁...");
+                        return;
                     }
                     if (config.Desktops != null && desktopPath != null)
                         foreach (var item in config.Desktops)
@@ -137,18 +129,16 @@ namespace AutoVDesktop
                                 Win32.ChangeDesktopFolder(fullNewDesktopPath);
                                 Thread.Sleep(50+(int)config.Delay/10);
                                 SetIcon(args.NewDesktop.Name);
-                                System.Console.WriteLine($"线程{_threadID}: 运行完毕...重置线程记数");
-                                threadID = 0;
-                                System.Console.WriteLine($"线程{_threadID}: 解锁...");
-                                Monitor.Exit(lockObj);
-                                return true;
+                                Logger.Debug($"线程{_threadID}: 运行完毕...");
+                               // threadID = 0;
+                                Logger.Debug($"线程{_threadID}: 解锁...");
+                                return ;
                             }
                         }
-                    System.Console.WriteLine($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{args.NewDesktop.Name}");
-                    Monitor.Exit(lockObj);
-                    return true;
+                    Logger.Debug($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{args.NewDesktop.Name}");
+                    return;
                 }
-            }, 50);
+           
 
         }
         static void SaveIcon(string desktopName)
@@ -166,7 +156,7 @@ namespace AutoVDesktop
             //var registryValues = _storage.GetRegistryValues(desktopName);
             //_registry.SetRegistryValues(registryValues);
             var iconPositions = (NamedDesktopPoint[])_storage.GetIconPositions(desktopName);
-            System. Console.WriteLine("开始恢复桌面图标位置: " + desktopName);
+            Program.Logger.Debug("开始恢复桌面图标位置: " + desktopName);
            
             desktop.SetIconPositions(iconPositions);
 
@@ -271,7 +261,7 @@ namespace AutoVDesktop
                 Regex regex = new(@"[\/?*:|\\<>]");
                 if (regex.IsMatch(desktopName))
                 {
-                    Console.WriteLine("非法的文件夹名称: " + desktopName);
+                    Program.Logger.Debug("非法的文件夹名称: " + desktopName);
                     MessageBox.Show("非法的文件夹名称: " + desktopName + "\n请修改后重试", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     System.Environment.Exit(0);
                 }
@@ -279,7 +269,7 @@ namespace AutoVDesktop
             if (config.DebugMode)
             {
                 AllocConsole();
-                System.Console.WriteLine("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
+                Logger.Debug("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
             }
             if (config.Delay < 1)
             {
@@ -319,7 +309,7 @@ namespace AutoVDesktop
         {
             public static void Debug(string msg)
             {
-                if (config.DebugMode == true) { System.Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {msg}"); }
+                if (config.DebugMode == true) { System.Console.WriteLine ($"[{DateTime.Now.ToLongTimeString()}] {msg}"); }
             }
         }
     }

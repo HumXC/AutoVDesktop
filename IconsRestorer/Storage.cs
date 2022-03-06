@@ -8,10 +8,10 @@ namespace AutoVDesktop.IconsRestorer
     {
         public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
         {
-            System.Console.WriteLine("开始保存图标位置: " + fileName);
+            Program.Logger.Debug("开始保存图标位置: " + fileName);
             foreach (var position in iconPositions)
             {
-                Console.WriteLine($"in Desktop: {position.Name} ({position.X},{position.Y})");
+                Program.Logger.Debug($"in Desktop: {position.Name} ({position.X},{position.Y})");
 
             }
             var xDoc = new XDocument(
@@ -46,10 +46,10 @@ namespace AutoVDesktop.IconsRestorer
 
         public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
-            System.Console.WriteLine("开始保存图标位置: "+fileName);
+            Program.Logger.Debug("开始保存图标位置: "+fileName);
             foreach (var position in iconPositions)
             {
-                Console.WriteLine($"in Desktop: {position.Name} ({position.X},{position.Y})");
+                Program.Logger.Debug($"in Desktop: {position.Name} ({position.X},{position.Y})");
 
             }
             var xDoc = new XDocument(

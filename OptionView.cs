@@ -74,7 +74,7 @@ namespace AutoVDesktop
             Regex regex = new(@"[\/?*:|\\<>]");
             if (regex.IsMatch(inputDesktopName.Text))
             {
-                Console.WriteLine("非法的文件夹名称: " + inputDesktopName.Text);
+                Program.Logger.Debug("非法的文件夹名称: " + inputDesktopName.Text);
                 MessageBox.Show("非法的文件夹名称: " + inputDesktopName.Text + "\n请修改后重试", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -172,6 +172,7 @@ namespace AutoVDesktop
 
         private void 退出ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            notifyIcon1.Visible = false;
             System.Environment.Exit(0);
         }
 
