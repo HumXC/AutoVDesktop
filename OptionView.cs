@@ -167,7 +167,7 @@ namespace AutoVDesktop
 
         private void 选项ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Visible = true;
+            this.Show();
         }
 
         private void 退出ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -179,7 +179,7 @@ namespace AutoVDesktop
         private void OptionView_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            this.Visible = false;
+            this.Hide();
         }
 
         private void showNotifyIcon_CheckedChanged(object sender, EventArgs e)
