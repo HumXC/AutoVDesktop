@@ -72,7 +72,7 @@ namespace AutoVDesktop.IconsRestorer
             }
 
         }
-     
+
         private NamedDesktopPoint[] GetIconsPositions(IntPtr desktopProcessHandle, IntPtr sharedMemoryPointer)
         {
             var listOfPoints = new LinkedList<NamedDesktopPoint>();

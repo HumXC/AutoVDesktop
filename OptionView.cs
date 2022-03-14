@@ -138,7 +138,7 @@ namespace AutoVDesktop
                 var k = RKey.GetValue("AutoVDesktop");
                 if (k == null)
                 {
-                    if (Program. config.StartWithWindows)
+                    if (Program.config.StartWithWindows)
                         RKey.SetValue("AutoVDesktop", appName);
                 }
                 else
