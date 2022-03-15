@@ -25,28 +25,25 @@ namespace AutoVDesktop.IconsRestorer
                         registryValues.Select(p => new XElement("Value",
                             new XElement("Name", new XCData(p.Key)),
                             new XElement("Data", new XCData(p.Value)))))));
-            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops",fileName + ".xml");
+            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops", fileName + ".xml");
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
-            else
+            else if (!Directory.Exists(Path.GetDirectoryName(filePath)))
             {
-               if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                }
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
             }
             using Stream outStream = File.OpenWrite(filePath);
             using var writer = XmlWriter.Create(outStream);
             xDoc.WriteTo(writer);
 
         }
-        //测试用重写
 
         public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
-            Program.Logger.Debug("开始保存图标位置: "+fileName);
+            Program.Logger.Debug("开始保存图标位置: " + fileName);
             foreach (var position in iconPositions)
             {
                 Program.Logger.Debug($"in Desktop: {position.Name} ({position.X},{position.Y})");
@@ -59,11 +56,13 @@ namespace AutoVDesktop.IconsRestorer
                             new XAttribute("x", p.X),
                             new XAttribute("y", p.Y),
                             new XText(p.Name))))));
-            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops",fileName + ".xml");
+            string fileDir = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops");
+            string filePath = Path.Combine(fileDir, fileName + ".xml");
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
+            else if (!Directory.Exists(filePath)) Directory.CreateDirectory(fileDir);
             using Stream outStream = File.OpenWrite(filePath);
             using var writer = XmlWriter.Create(outStream);
             xDoc.WriteTo(writer);
@@ -72,7 +71,7 @@ namespace AutoVDesktop.IconsRestorer
 
         public IEnumerable<NamedDesktopPoint> GetIconPositions(string fileName)
         {
-            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase,"Desktops", fileName + ".xml");
+            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops", fileName + ".xml");
             if (File.Exists(filePath) == false)
             {
                 return Array.Empty<NamedDesktopPoint>();

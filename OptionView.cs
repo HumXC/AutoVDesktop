@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace AutoVDesktop
 {
@@ -26,12 +17,13 @@ namespace AutoVDesktop
             {
                 notifyIcon1.Visible = false;
             }
+            GC.Collect();
         }
 
         private void OptionView_Shown(object sender, EventArgs e)
         {
             if (Program.config.DebugMode == false)
-                this.Visible = false;
+                this.Hide();
         }
         private void LoadConfig()
         {
@@ -180,6 +172,7 @@ namespace AutoVDesktop
         {
             e.Cancel = true;
             this.Hide();
+            GC.Collect();
         }
 
         private void showNotifyIcon_CheckedChanged(object sender, EventArgs e)

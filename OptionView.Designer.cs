@@ -71,26 +71,26 @@
             this.退出ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(185, 103);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(84, 76);
             // 
             // 关于ToolStripMenuItem
             // 
             this.关于ToolStripMenuItem.Name = "关于ToolStripMenuItem";
-            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(184, 24);
+            this.关于ToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
             this.关于ToolStripMenuItem.Text = "关于";
             this.关于ToolStripMenuItem.Click += new System.EventHandler(this.关于ToolStripMenuItem_Click);
             // 
             // 选项ToolStripMenuItem
             // 
             this.选项ToolStripMenuItem.Name = "选项ToolStripMenuItem";
-            this.选项ToolStripMenuItem.Size = new System.Drawing.Size(184, 24);
+            this.选项ToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
             this.选项ToolStripMenuItem.Text = "选项";
             this.选项ToolStripMenuItem.Click += new System.EventHandler(this.选项ToolStripMenuItem_Click);
             // 
             // 退出ToolStripMenuItem
             // 
             this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(184, 24);
+            this.退出ToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
             this.退出ToolStripMenuItem.Text = "退出";
             this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
             // 
@@ -215,7 +215,7 @@
             this.restorerIcon.Name = "restorerIcon";
             this.restorerIcon.Size = new System.Drawing.Size(131, 27);
             this.restorerIcon.TabIndex = 12;
-            this.restorerIcon.Text = "保持图标位置";
+            this.restorerIcon.Text = "恢复图标位置";
             this.restorerIcon.UseVisualStyleBackColor = true;
             // 
             // label5

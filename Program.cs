@@ -90,7 +90,6 @@ namespace AutoVDesktop
                 ++threadID;
 
             };
-
             Application.Run(new OptionView());
 
         }
@@ -125,13 +124,20 @@ namespace AutoVDesktop
                             {
                                 Directory.CreateDirectory(fullNewDesktopPath);
                             }
-                            SaveIcon(oldDesktopName);
-                            Win32.ChangeDesktopFolder(fullNewDesktopPath);
-                            Thread.Sleep(50 + (int)config.Delay / 10);
-                            SetIcon(args.NewDesktop.Name);
-                            Logger.Debug($"线程{_threadID}: 运行完毕...");
+                            if (config.RestoreIcon)
+                            {
+                                SaveIcon(oldDesktopName);
+                                Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                Thread.Sleep(80 + (int)config.Delay / 10);
+                                SetIcon(args.NewDesktop.Name);
+                            }
+                            else
+                            {
+                                Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                            }
+
+                            Logger.Debug($"线程{_threadID}: 运行完毕，解锁...");
                             // threadID = 0;
-                            Logger.Debug($"线程{_threadID}: 解锁...");
                             return;
                         }
                     }
