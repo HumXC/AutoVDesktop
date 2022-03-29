@@ -3,6 +3,7 @@
 Quickly change files and ICONS on the desktop after switching desktops using Win + TAB。
 
 在使用 win+tab 或者 ctrl+win+←/→ 切换虚拟桌面之后，切换绑定的桌面图标。
+经测试只能在 Windows 11 系统上使用
 
 使用的库:[VirtualDesktop](https://github.com/Grabacr07/VirtualDesktop)
 
