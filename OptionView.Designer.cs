@@ -99,9 +99,9 @@
             this.desktopList.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.desktopList.FormattingEnabled = true;
             this.desktopList.ItemHeight = 23;
-            this.desktopList.Location = new System.Drawing.Point(12, 65);
+            this.desktopList.Location = new System.Drawing.Point(12, 66);
             this.desktopList.Name = "desktopList";
-            this.desktopList.Size = new System.Drawing.Size(159, 280);
+            this.desktopList.Size = new System.Drawing.Size(160, 280);
             this.desktopList.TabIndex = 1;
             // 
             // label1
@@ -111,16 +111,16 @@
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei UI", 12.10084F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label1.Location = new System.Drawing.Point(12, 24);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(132, 27);
+            this.label1.Size = new System.Drawing.Size(138, 28);
             this.label1.TabIndex = 2;
             this.label1.Text = "已添加的桌面";
             // 
             // inputDesktopName
             // 
             this.inputDesktopName.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.inputDesktopName.Location = new System.Drawing.Point(199, 65);
+            this.inputDesktopName.Location = new System.Drawing.Point(201, 66);
             this.inputDesktopName.Name = "inputDesktopName";
-            this.inputDesktopName.Size = new System.Drawing.Size(157, 29);
+            this.inputDesktopName.Size = new System.Drawing.Size(158, 29);
             this.inputDesktopName.TabIndex = 3;
             // 
             // label2
@@ -128,36 +128,36 @@
             this.label2.AutoSize = true;
             this.label2.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.label2.Font = new System.Drawing.Font("Microsoft YaHei UI", 12.10084F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(199, 24);
+            this.label2.Location = new System.Drawing.Point(201, 24);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(92, 27);
+            this.label2.Size = new System.Drawing.Size(96, 28);
             this.label2.TabIndex = 4;
             this.label2.Text = "添加桌面";
             // 
             // delDesktop
             // 
-            this.delDesktop.Location = new System.Drawing.Point(12, 361);
+            this.delDesktop.Location = new System.Drawing.Point(12, 364);
             this.delDesktop.Name = "delDesktop";
-            this.delDesktop.Size = new System.Drawing.Size(159, 49);
+            this.delDesktop.Size = new System.Drawing.Size(160, 49);
             this.delDesktop.TabIndex = 5;
             this.delDesktop.Text = "删除选中";
             this.delDesktop.UseVisualStyleBackColor = true;
-            this.delDesktop.Click += new System.EventHandler(this.delDesktop_Click);
+            this.delDesktop.Click += new System.EventHandler(this.DelDesktop_Click);
             // 
             // addDesktop
             // 
-            this.addDesktop.Location = new System.Drawing.Point(199, 100);
+            this.addDesktop.Location = new System.Drawing.Point(201, 101);
             this.addDesktop.Name = "addDesktop";
-            this.addDesktop.Size = new System.Drawing.Size(159, 49);
+            this.addDesktop.Size = new System.Drawing.Size(160, 49);
             this.addDesktop.TabIndex = 6;
             this.addDesktop.Text = "添加";
             this.addDesktop.UseVisualStyleBackColor = true;
-            this.addDesktop.Click += new System.EventHandler(this.addDesktop_Click);
+            this.addDesktop.Click += new System.EventHandler(this.AddDesktop_Click);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 493);
+            this.label3.Location = new System.Drawing.Point(12, 497);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(339, 40);
             this.label3.TabIndex = 7;
@@ -168,9 +168,9 @@
             this.label4.AutoSize = true;
             this.label4.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.label4.Font = new System.Drawing.Font("Microsoft YaHei UI", 12.10084F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label4.Location = new System.Drawing.Point(199, 173);
+            this.label4.Location = new System.Drawing.Point(201, 174);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(92, 27);
+            this.label4.Size = new System.Drawing.Size(96, 28);
             this.label4.TabIndex = 8;
             this.label4.Text = "其他配置";
             // 
@@ -178,42 +178,42 @@
             // 
             this.debugMode.AutoSize = true;
             this.debugMode.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.debugMode.Location = new System.Drawing.Point(199, 248);
+            this.debugMode.Location = new System.Drawing.Point(201, 250);
             this.debugMode.Name = "debugMode";
-            this.debugMode.Size = new System.Drawing.Size(97, 27);
+            this.debugMode.Size = new System.Drawing.Size(104, 28);
             this.debugMode.TabIndex = 9;
             this.debugMode.Text = "调试模式";
             this.debugMode.UseVisualStyleBackColor = true;
             // 
             // saveConfig
             // 
-            this.saveConfig.Location = new System.Drawing.Point(199, 425);
+            this.saveConfig.Location = new System.Drawing.Point(201, 429);
             this.saveConfig.Name = "saveConfig";
-            this.saveConfig.Size = new System.Drawing.Size(157, 49);
+            this.saveConfig.Size = new System.Drawing.Size(158, 49);
             this.saveConfig.TabIndex = 10;
             this.saveConfig.Text = "保存配置";
             this.saveConfig.UseVisualStyleBackColor = true;
-            this.saveConfig.Click += new System.EventHandler(this.saveConfig_Click);
+            this.saveConfig.Click += new System.EventHandler(this.SaveConfig_Click);
             // 
             // showNotifyIcon
             // 
             this.showNotifyIcon.AutoSize = true;
             this.showNotifyIcon.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.showNotifyIcon.Location = new System.Drawing.Point(199, 316);
+            this.showNotifyIcon.Location = new System.Drawing.Point(201, 319);
             this.showNotifyIcon.Name = "showNotifyIcon";
-            this.showNotifyIcon.Size = new System.Drawing.Size(148, 27);
+            this.showNotifyIcon.Size = new System.Drawing.Size(158, 28);
             this.showNotifyIcon.TabIndex = 11;
             this.showNotifyIcon.Text = "显示通知栏图标";
             this.showNotifyIcon.UseVisualStyleBackColor = true;
-            this.showNotifyIcon.CheckedChanged += new System.EventHandler(this.showNotifyIcon_CheckedChanged);
+            this.showNotifyIcon.CheckedChanged += new System.EventHandler(this.ShowNotifyIcon_CheckedChanged);
             // 
             // restorerIcon
             // 
             this.restorerIcon.AutoSize = true;
             this.restorerIcon.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.restorerIcon.Location = new System.Drawing.Point(199, 281);
+            this.restorerIcon.Location = new System.Drawing.Point(201, 283);
             this.restorerIcon.Name = "restorerIcon";
-            this.restorerIcon.Size = new System.Drawing.Size(131, 27);
+            this.restorerIcon.Size = new System.Drawing.Size(140, 28);
             this.restorerIcon.TabIndex = 12;
             this.restorerIcon.Text = "恢复图标位置";
             this.restorerIcon.UseVisualStyleBackColor = true;
@@ -222,57 +222,57 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label5.Location = new System.Drawing.Point(199, 352);
+            this.label5.Location = new System.Drawing.Point(201, 355);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(114, 23);
+            this.label5.Size = new System.Drawing.Size(119, 24);
             this.label5.TabIndex = 13;
             this.label5.Text = "响应延迟(ms)";
             // 
             // inputDelay
             // 
             this.inputDelay.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.inputDelay.Location = new System.Drawing.Point(199, 381);
+            this.inputDelay.Location = new System.Drawing.Point(201, 384);
             this.inputDelay.Name = "inputDelay";
-            this.inputDelay.Size = new System.Drawing.Size(114, 29);
+            this.inputDelay.Size = new System.Drawing.Size(115, 29);
             this.inputDelay.TabIndex = 14;
             // 
             // openDesktopFolder
             // 
-            this.openDesktopFolder.Location = new System.Drawing.Point(12, 425);
+            this.openDesktopFolder.Location = new System.Drawing.Point(12, 429);
             this.openDesktopFolder.Name = "openDesktopFolder";
-            this.openDesktopFolder.Size = new System.Drawing.Size(159, 49);
+            this.openDesktopFolder.Size = new System.Drawing.Size(160, 49);
             this.openDesktopFolder.TabIndex = 15;
             this.openDesktopFolder.Text = "打开桌面文件夹";
             this.openDesktopFolder.UseVisualStyleBackColor = true;
-            this.openDesktopFolder.Click += new System.EventHandler(this.openDesktopFolder_Click);
+            this.openDesktopFolder.Click += new System.EventHandler(this.OpenDesktopFolder_Click);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(287, 180);
+            this.label6.Location = new System.Drawing.Point(289, 182);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(69, 20);
             this.label6.TabIndex = 16;
             this.label6.Text = "打开文件";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
+            this.label6.Click += new System.EventHandler(this.Label6_Click);
             // 
             // startWithWindows
             // 
             this.startWithWindows.AutoSize = true;
             this.startWithWindows.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.28571F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.startWithWindows.Location = new System.Drawing.Point(199, 215);
+            this.startWithWindows.Location = new System.Drawing.Point(201, 217);
             this.startWithWindows.Name = "startWithWindows";
-            this.startWithWindows.Size = new System.Drawing.Size(97, 27);
+            this.startWithWindows.Size = new System.Drawing.Size(104, 28);
             this.startWithWindows.TabIndex = 17;
             this.startWithWindows.Text = "开机启动";
             this.startWithWindows.UseVisualStyleBackColor = true;
             // 
             // OptionView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(119F, 119F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(372, 543);
+            this.ClientSize = new System.Drawing.Size(375, 548);
             this.Controls.Add(this.startWithWindows);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.openDesktopFolder);

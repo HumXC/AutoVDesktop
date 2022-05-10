@@ -1,24 +1,17 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
 
 namespace AutoVDesktop.IconsRestorer
 {
     internal class DesktopRegistry
     {
         private const string KeyName = @"Software\Microsoft\Windows\Shell\Bags\1\Desktop";
-
-        private readonly BinaryFormatter _formatter = new();
-
+        readonly XmlSerializer serializer = new (typeof(string));
         public IDictionary<string, string> GetRegistryValues()
         {
-            using (var registry = Registry.CurrentUser.OpenSubKey(KeyName))
-            {
-                return registry.GetValueNames().ToDictionary(n => n, n => GetValue(registry, n));
-            }
+            using var registry = Registry.CurrentUser.OpenSubKey(KeyName);
+            return registry.GetValueNames().ToDictionary(n => n, n => GetValue(registry, n));
         }
 
         private string GetValue(RegistryKey registry, string valueName)
@@ -27,38 +20,38 @@ namespace AutoVDesktop.IconsRestorer
             if (value == null)
             { return string.Empty; }
 
-            using (var stream = new MemoryStream())
-            {
-                _formatter.Serialize(stream, value);
+            using var stream = new MemoryStream();
+            
+            serializer.Serialize(stream, value);
 
-                var bytes = stream.ToArray();
+            var bytes = stream.ToArray();
 
-                return Convert.ToBase64String(bytes);
-            }
+            return Convert.ToBase64String(bytes);
         }
 
         public void SetRegistryValues(IDictionary<string, string> values)
         {
-            using (var registry = Registry.CurrentUser.OpenSubKey(KeyName, true))
+            using var registry = Registry.CurrentUser.OpenSubKey(KeyName, true);
+            foreach (var item in values)
             {
-                foreach (var item in values)
+                var v = GetValue(item.Value);
+                if (registry != null && v != null)
                 {
-                    registry.SetValue(item.Key, GetValue(item.Value));
+                    registry.SetValue(item.Key, v);
                 }
+
             }
         }
 
-        private object GetValue(string stringValue)
+        private object? GetValue(string stringValue)
         {
             if (string.IsNullOrEmpty(stringValue))
             { return null; }
 
             var bytes = Convert.FromBase64String(stringValue);
 
-            using (var stream = new MemoryStream(bytes))
-            {
-                return _formatter.Deserialize(stream);
-            }
+            using var stream = new MemoryStream(bytes);
+            return serializer.Deserialize(stream);
         }
     }
 }

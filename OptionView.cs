@@ -38,16 +38,15 @@ namespace AutoVDesktop
             showNotifyIcon.Checked = Program.config.ShowNotifyIcon;
         }
 
-        private void label6_Click(object sender, EventArgs e)
+        private void Label6_Click(object sender, EventArgs e)
         {
-            string? configPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "config.json");
             Process p = new();
             p.StartInfo.FileName = "explorer.exe";
-            p.StartInfo.Arguments = configPath;
+            p.StartInfo.Arguments = Program.config.confFileName;
             p.Start();
         }
 
-        private void openDesktopFolder_Click(object sender, EventArgs e)
+        private void OpenDesktopFolder_Click(object sender, EventArgs e)
         {
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             Process p = new();
@@ -57,7 +56,7 @@ namespace AutoVDesktop
 
         }
 
-        private void addDesktop_Click(object sender, EventArgs e)
+        private void AddDesktop_Click(object sender, EventArgs e)
         {
             if ("".Equals(inputDesktopName.Text))
             {
@@ -81,12 +80,12 @@ namespace AutoVDesktop
             inputDesktopName.Text = "";
         }
 
-        private void delDesktop_Click(object sender, EventArgs e)
+        private void DelDesktop_Click(object sender, EventArgs e)
         {
             desktopList.Items.Remove(desktopList.SelectedItem);
         }
 
-        private void saveConfig_Click(object sender, EventArgs e)
+        private void SaveConfig_Click(object sender, EventArgs e)
         {
             if (!Regex.IsMatch(inputDelay.Text, @"^[0-9]+$"))
             {
@@ -112,16 +111,17 @@ namespace AutoVDesktop
             Program.config.DebugMode = debugMode.Checked;
             Program.config.ShowNotifyIcon = showNotifyIcon.Checked;
             Program.config.RestoreIcon = restorerIcon.Checked;
-            var li = new List<string>();
-            foreach (var desktopName in desktopList.Items)
+            List<string> list = new();
+            foreach (string desktopName in desktopList.Items)
             {
-                if (!"".Equals(desktopName.ToString()))
+                if (!"".Equals(desktopName))
                 {
-                    li.Add(desktopName.ToString());
+                    list.Add(desktopName);
                 }
-
             }
-            Program.config.Desktops = li.ToArray();
+            Program.config.Desktops = list;
+            Program.config.Save();
+
             //开机自启
             Microsoft.Win32.RegistryKey RKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
             var appName = Environment.ProcessPath;
@@ -149,7 +149,6 @@ namespace AutoVDesktop
                 }
             }
 
-            Program.SaveConfig();
             if (!Program.config.DebugMode)
             {
                 this.Visible = false;
@@ -175,7 +174,7 @@ namespace AutoVDesktop
             GC.Collect();
         }
 
-        private void showNotifyIcon_CheckedChanged(object sender, EventArgs e)
+        private void ShowNotifyIcon_CheckedChanged(object sender, EventArgs e)
         {
             if (!showNotifyIcon.Checked)
             {

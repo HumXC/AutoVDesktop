@@ -92,7 +92,7 @@ namespace AutoVDesktop.IconsRestorer
 
                 Win32.SendMessage(_desktopHandle, Win32.LVM_GETITEMPOSITION, itemIndex, sharedMemoryPointer);
 
-                Win32.ReadProcessMemory(desktopProcessHandle, sharedMemoryPointer,
+                _ = Win32.ReadProcessMemory(desktopProcessHandle, sharedMemoryPointer,
                     Marshal.UnsafeAddrOfPinnedArrayElement(points, 0),
                     Marshal.SizeOf(typeof(DesktopPoint)),
                     ref numberOfBytes);
@@ -129,7 +129,7 @@ namespace AutoVDesktop.IconsRestorer
             }
         }
 
-        public void Refresh()
+        public static void Refresh()
         {
             //使用F5刷新会导致图标错位
             //Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);

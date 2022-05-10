@@ -22,8 +22,8 @@ namespace AutoVDesktop.IconsRestorer
 
         public const uint LVIF_TEXT = 0x0001;
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string? lpszWindow);
 
         public enum DesktopWindow
         {
@@ -42,7 +42,7 @@ namespace AutoVDesktop.IconsRestorer
 
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
         
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("shell32.dll")]
@@ -67,7 +67,7 @@ namespace AutoVDesktop.IconsRestorer
                 EnumWindows((hwnd, lParam) =>
                 {
                     var sb = new StringBuilder(256);
-                    GetClassName(hwnd, sb, sb.Capacity);
+                    _ = GetClassName(hwnd, sb, sb.Capacity);
 
                     if (sb.ToString() == "WorkerW")
                     {
@@ -84,19 +84,14 @@ namespace AutoVDesktop.IconsRestorer
                 }, IntPtr.Zero);
             }
 
-            switch (desktopWindow)
+            return desktopWindow switch
             {
-                case DesktopWindow.ProgMan:
-                    return _ProgMan;
-                case DesktopWindow.SHELLDLL_DefViewParent:
-                    return _SHELLDLL_DefViewParent;
-                case DesktopWindow.SHELLDLL_DefView:
-                    return _SHELLDLL_DefView;
-                case DesktopWindow.SysListView32:
-                    return _SysListView32;
-                default:
-                    return IntPtr.Zero;
-            }
+                DesktopWindow.ProgMan => _ProgMan,
+                DesktopWindow.SHELLDLL_DefViewParent => _SHELLDLL_DefViewParent,
+                DesktopWindow.SHELLDLL_DefView => _SHELLDLL_DefView,
+                DesktopWindow.SysListView32 => _SysListView32,
+                _ => IntPtr.Zero,
+            };
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]

@@ -6,7 +6,7 @@ namespace AutoVDesktop.IconsRestorer
 {
     internal class Storage
     {
-        public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
+        public static void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
         {
             Program.Logger.Debug("开始保存图标位置: " + fileName);
             foreach (var position in iconPositions)
@@ -25,14 +25,19 @@ namespace AutoVDesktop.IconsRestorer
                         registryValues.Select(p => new XElement("Value",
                             new XElement("Name", new XCData(p.Key)),
                             new XElement("Data", new XCData(p.Value)))))));
-            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops", fileName + ".xml");
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Desktops", fileName + ".xml");
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
             else if (!Directory.Exists(Path.GetDirectoryName(filePath)))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                var dirName = Path.GetDirectoryName(filePath);
+                if (dirName != null)
+                {
+                    Directory.CreateDirectory(dirName);
+                }
+
 
             }
             using Stream outStream = File.OpenWrite(filePath);
@@ -41,7 +46,7 @@ namespace AutoVDesktop.IconsRestorer
 
         }
 
-        public void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
+        public static void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
             Program.Logger.Debug("开始保存图标位置: " + fileName);
             foreach (var position in iconPositions)
@@ -56,7 +61,7 @@ namespace AutoVDesktop.IconsRestorer
                             new XAttribute("x", p.X),
                             new XAttribute("y", p.Y),
                             new XText(p.Name))))));
-            string fileDir = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops");
+            string fileDir = Path.Combine(Environment.CurrentDirectory, "Desktops");
             string filePath = Path.Combine(fileDir, fileName + ".xml");
             if (File.Exists(filePath))
             {
@@ -69,9 +74,9 @@ namespace AutoVDesktop.IconsRestorer
 
         }
 
-        public IEnumerable<NamedDesktopPoint> GetIconPositions(string fileName)
+        public static IEnumerable<NamedDesktopPoint> GetIconPositions(string fileName)
         {
-            string filePath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Desktops", fileName + ".xml");
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Desktops", fileName + ".xml");
             if (File.Exists(filePath) == false)
             {
                 return Array.Empty<NamedDesktopPoint>();
@@ -84,7 +89,7 @@ namespace AutoVDesktop.IconsRestorer
                 .ToArray();
         }
 
-        public IDictionary<string, string> GetRegistryValues(string fileName)
+        public static IDictionary<string, string> GetRegistryValues(string fileName)
         {
             using var storage = IsolatedStorageFile.GetUserStoreForAssembly();
             if (storage.FileExists(fileName) == false)
