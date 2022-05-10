@@ -8,9 +8,13 @@ namespace AutoVDesktop.IconsRestorer
     {
         private const string KeyName = @"Software\Microsoft\Windows\Shell\Bags\1\Desktop";
         readonly XmlSerializer serializer = new (typeof(string));
-        public IDictionary<string, string> GetRegistryValues()
+        public IDictionary<string, string>? GetRegistryValues()
         {
             using var registry = Registry.CurrentUser.OpenSubKey(KeyName);
+            if(registry == null)
+            {
+                return null;
+            }
             return registry.GetValueNames().ToDictionary(n => n, n => GetValue(registry, n));
         }
 

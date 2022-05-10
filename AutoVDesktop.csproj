@@ -23,6 +23,7 @@
   <ItemGroup>
     <Reference Include="UIAutomationClient">
       <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF\UIAutomationClient.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="VirtualDesktop">
       <HintPath>..\..\VirtualDesktop\source\VirtualDesktop\bin\Release\net472\VirtualDesktop.dll</HintPath>

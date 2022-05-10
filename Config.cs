@@ -21,7 +21,7 @@ namespace AutoVDesktop
 
         public Config()
         {
-            //检查文件夹名的合法性
+            // 检查文件夹名的合法性
             foreach (var desktopName in Desktops)
             {
                 Regex regex = new(@"[\/?*:|\\<>]");
@@ -67,7 +67,7 @@ namespace AutoVDesktop
                 // 创建新的配置文件
                 using (Stream s = File.OpenWrite(confFileName))
                 {
-                    string nowDesktopDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                    string nowDesktopDir = Path.GetFileName(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
                     Desktops.Add(nowDesktopDir);
                 };
                 Save();
@@ -76,7 +76,7 @@ namespace AutoVDesktop
 
         public void Save()
         {
-            using (StreamWriter s = new(confFileName,false,Encoding.UTF8))
+            using (StreamWriter s = new(confFileName, false, Encoding.UTF8))
             {
                 byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes<Config>(this);
                 try

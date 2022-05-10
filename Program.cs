@@ -3,18 +3,11 @@ namespace AutoVDesktop
     using System.Threading;
     using WindowsDesktop;
     using System;
-    using System.Text.Json;
     using AutoVDesktop.IconsRestorer;
     using System.Diagnostics;
-    using System.Text.RegularExpressions;
 
     internal static class Program
     {
-
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-
 
         public static Config config =new();
         private static readonly object lockObj = new();
@@ -32,8 +25,7 @@ namespace AutoVDesktop
             if (processes.Length > 1)
             {
                 MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
-                Thread.Sleep(1000);
-                System.Environment.Exit(1);
+                Environment.Exit(0);
             }
 
             ApplicationConfiguration.Initialize();
