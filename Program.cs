@@ -8,14 +8,10 @@ namespace AutoVDesktop
     internal static class Program
     {
 
-        public static Config config =new();
+        public static Config config = new();
         private static readonly object lockObj = new();
         private static int threadID = 0;
 
-        // 引入控制台
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-        static extern bool AllocConsole();
 
         [STAThread]
         static void Main()
@@ -27,16 +23,16 @@ namespace AutoVDesktop
                 Environment.Exit(0);
             }
             InitConf(config);
-/*            VirtualDesktop.CurrentChanged += (_, args) =>
-            {
-                Logger.Debug($"线程{threadID}: 切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
-                ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(args.NewDesktop.Name, threadID); });
-                ++threadID;
-            };*/
+            /*            VirtualDesktop.CurrentChanged += (_, args) =>
+                        {
+                            Logger.Debug($"线程{threadID}: 切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
+                            ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(args.NewDesktop.Name, threadID); });
+                            ++threadID;
+                        };*/
             Application.Run(new OptionView());
 
         }
-        public static void ChangeDesktop(string desktopName , int _threadID)
+        static void ChangeDesktop(string desktopName, int _threadID)
         {
             Thread.Sleep(config.Delay);
             if (threadID != _threadID)
@@ -69,13 +65,13 @@ namespace AutoVDesktop
                             if (config.RestoreIcon)
                             {
                                 SaveIcon(oldDesktopName);
-                                Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                IconsRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
                                 Thread.Sleep(80 + (int)config.Delay / 10);
                                 SetIcon(desktopName);
                             }
                             else
                             {
-                                Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                IconsRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
                             }
 
                             Logger.Debug($"线程{_threadID}: 运行完毕，解锁...");
@@ -116,7 +112,7 @@ namespace AutoVDesktop
             config.LoadConfig();
             if (config.DebugMode)
             {
-                AllocConsole();
+                Win32.AllocConsole();
                 Logger.Debug("这里是Debug窗口,可以在配置文件里将[DebugMode]属性改为false关闭该窗口的显示.");
             }
             //开机自启
