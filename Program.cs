@@ -22,6 +22,8 @@ namespace AutoVDesktop
                 MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
                 Environment.Exit(0);
             }
+
+           
             InitConf(config);
             /*            VirtualDesktop.CurrentChanged += (_, args) =>
                         {
@@ -87,15 +89,15 @@ namespace AutoVDesktop
         }
         static void SaveIcon(string desktopName)
         {
-            var desktop = new Desktop();
-            Desktop.Refresh();
+            var desktop = new IconsRestorer. Desktop();
+            IconsRestorer.Desktop.Refresh();
             var iconPositions = desktop.GetIconsPositions();
             // var registryValues = _registry.GetRegistryValues();
             Storage.SaveIconPositions(iconPositions, desktopName);
         }
         static void SetIcon(string desktopName)
         {
-            var desktop = new Desktop();
+            var desktop = new IconsRestorer.Desktop();
 
             //var registryValues = _storage.GetRegistryValues(desktopName);
             //_registry.SetRegistryValues(registryValues);
@@ -104,7 +106,7 @@ namespace AutoVDesktop
 
             desktop.SetIconPositions(iconPositions);
 
-            Desktop.Refresh();
+            IconsRestorer.Desktop.Refresh();
         }
         //初始化,检查配置文件
         static void InitConf(Config config)
