@@ -7,6 +7,8 @@ Quickly change files and ICONS on the desktop after switching desktops using Win
 
 使用的库:[VirtualDesktop](https://github.com/Grabacr07/VirtualDesktop)
 
+注意：该程序强依赖的 VirtualDesktop 存储库在某个 Win11 预览版之后无法使用, 故推测只能在正式版使用。
+
 ## 声明
 
 程序中实现保存和恢复桌面图标功能的代码(IconsRestorer)来自[此链接](https://www.codeproject.com/Articles/639486/Save-and-Restore-Icon-Positions-on-Desktop?msg=5864404#xx5864404xx)，我修改并使用了此段代码，IconsRestorer 代码的原作者不需要对此程序产生的任何后果负责。

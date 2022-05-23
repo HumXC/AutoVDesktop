@@ -60,14 +60,13 @@ namespace AutoVDesktop
             VirtualDesktop.CurrentChanged += (_, args) =>
             {
                 Logger.Debug($"线程{threadID}: 切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
-                ThreadPool.QueueUserWorkItem((state) => { ChangeDesktopThread(args, threadID); });
+                ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(args.NewDesktop.Name, threadID); });
                 ++threadID;
-
             };
             Application.Run(new OptionView());
 
         }
-        public static void ChangeDesktopThread(VirtualDesktopChangedEventArgs args, int _threadID)
+        public static void ChangeDesktop(string desktopName , int _threadID)
         {
             Thread.Sleep(config.Delay);
             if (threadID != _threadID)
@@ -81,7 +80,7 @@ namespace AutoVDesktop
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                 string oldDesktopName = Path.GetFileName(path);
                 string? desktopPath = Path.GetDirectoryName(path);
-                if (args.NewDesktop.Name.Equals(oldDesktopName))
+                if (desktopName.Equals(oldDesktopName))
                 {
                     Logger.Debug($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
                     Logger.Debug($"线程{_threadID}: 解锁...");
@@ -90,9 +89,9 @@ namespace AutoVDesktop
                 if (config.Desktops != null && desktopPath != null)
                     foreach (var item in config.Desktops)
                     {
-                        if (item.Equals(args.NewDesktop.Name))
+                        if (item.Equals(desktopName))
                         {
-                            var fullNewDesktopPath = Path.Combine(desktopPath, args.NewDesktop.Name);
+                            var fullNewDesktopPath = Path.Combine(desktopPath, desktopName);
                             if (!Directory.Exists(fullNewDesktopPath))
                             {
                                 Directory.CreateDirectory(fullNewDesktopPath);
@@ -102,7 +101,7 @@ namespace AutoVDesktop
                                 SaveIcon(oldDesktopName);
                                 Win32.ChangeDesktopFolder(fullNewDesktopPath);
                                 Thread.Sleep(80 + (int)config.Delay / 10);
-                                SetIcon(args.NewDesktop.Name);
+                                SetIcon(desktopName);
                             }
                             else
                             {
@@ -114,7 +113,7 @@ namespace AutoVDesktop
                             return;
                         }
                     }
-                Logger.Debug($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{args.NewDesktop.Name}");
+                Logger.Debug($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{desktopName}");
                 return;
             }
 
