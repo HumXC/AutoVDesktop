@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="VirtualDesktop" Version="5.0.5" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="UIAutomationClient">
       <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF\UIAutomationClient.dll</HintPath>
       <Private>True</Private>

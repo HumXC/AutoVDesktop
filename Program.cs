@@ -1,7 +1,6 @@
 namespace AutoVDesktop
 {
     using System.Threading;
-    using WindowsDesktop;
     using System;
     using AutoVDesktop.IconsRestorer;
     using System.Diagnostics;
@@ -27,42 +26,13 @@ namespace AutoVDesktop
                 MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
                 Environment.Exit(0);
             }
-
-            ApplicationConfiguration.Initialize();
-            try
-            {
-                VirtualDesktop.Configure();
-            }
-            catch (Exception e) {
-                MessageBox.Show($"VirtualDesktop 在初始化时出现错误: \n{e.Message}", "错误", MessageBoxButtons.OK,MessageBoxIcon.Error);
-                //Environment.Exit(1);
-            }
             InitConf(config);
-            //创建新的虚拟桌面后，如果还有配置里没创建的桌面，则重命名新桌面
-            VirtualDesktop.Created += (_, newVDesktop) =>
-            {
-                var vDesktops = VirtualDesktop.GetDesktops();
-                var vDesktopNames = new List<string>();
-                foreach (var vDesk in vDesktops)
-                {
-                    vDesktopNames.Add(vDesk.Name);
-                }
-                foreach (var desktopName in config.Desktops)
-                {
-                    if (vDesktopNames.IndexOf(desktopName) == -1)
-                    {
-                        newVDesktop.Name = desktopName;
-                        return;
-                    }
-                }
-
-            };
-            VirtualDesktop.CurrentChanged += (_, args) =>
+/*            VirtualDesktop.CurrentChanged += (_, args) =>
             {
                 Logger.Debug($"线程{threadID}: 切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
                 ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(args.NewDesktop.Name, threadID); });
                 ++threadID;
-            };
+            };*/
             Application.Run(new OptionView());
 
         }

@@ -10,6 +10,7 @@ namespace AutoVDesktop
             InitializeComponent();
         }
 
+        // 初始化窗口
         private void OptionView_Load(object sender, EventArgs e)
         {
             LoadConfig();
@@ -17,14 +18,16 @@ namespace AutoVDesktop
             {
                 notifyIcon1.Visible = false;
             }
-            GC.Collect();
         }
 
+        // 窗口初始化
         private void OptionView_Shown(object sender, EventArgs e)
         {
             if (Program.config.DebugMode == false)
                 this.Hide();
         }
+
+        // 加载配置文件数据到窗口
         private void LoadConfig()
         {
             foreach (var desktopName in Program.config.Desktops)
@@ -38,7 +41,7 @@ namespace AutoVDesktop
             showNotifyIcon.Checked = Program.config.ShowNotifyIcon;
         }
 
-        private void Label6_Click(object sender, EventArgs e)
+        private void OpenConfFile_Click(object sender, EventArgs e)
         {
             Process p = new();
             p.StartInfo.FileName = "explorer.exe";
@@ -80,11 +83,13 @@ namespace AutoVDesktop
             inputDesktopName.Text = "";
         }
 
+        // 删除桌面按钮
         private void DelDesktop_Click(object sender, EventArgs e)
         {
             desktopList.Items.Remove(desktopList.SelectedItem);
         }
 
+        // 保存配置按钮
         private void SaveConfig_Click(object sender, EventArgs e)
         {
             if (!Regex.IsMatch(inputDelay.Text, @"^[0-9]+$"))
@@ -156,6 +161,15 @@ namespace AutoVDesktop
 
         }
 
+        // 手动切换到指定桌面
+        private void ChangeToSelect_Click(object sender, EventArgs e)
+        {
+            var desktopName = changeToSelect.Text;
+            if (desktopName.Equals("")) return;
+            
+        }
+
+        // 以下是通知栏图标的相关内容
         private void 选项ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Show();
@@ -185,6 +199,21 @@ namespace AutoVDesktop
         private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new Info().Show();
+        }
+
+        private void startWithWindows_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void restorerIcon_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void debugMode_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
