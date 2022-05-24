@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Management" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="UIAutomationClient">
       <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF\UIAutomationClient.dll</HintPath>
       <Private>True</Private>
