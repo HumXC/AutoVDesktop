@@ -12,75 +12,135 @@ namespace AutoVDesktop.VirtualDesktop
 {
     internal class VirtualDesktop
     {
-        private static WqlEventQuery changedQuery;
-        private static WqlEventQuery creatOrRmQuery;
+        private static readonly WqlEventQuery changedQuery;
+
+        private static readonly WqlEventQuery creatOrRmQuery;
 
         public static Desktop NowDesktop { get; private set; }
-        public static List<Desktop> Desktops { get; private set; } = new List<Desktop>();
+        public static HashSet<Desktop> Desktops { get; private set; } = new();
+
+        // 当前桌面改变事件
+        public delegate void CurrentChangedHandler(Desktop lastDesktop, Desktop newDesktop);
+        private static event CurrentChangedHandler? EventCurrentChanged;
+        public static event CurrentChangedHandler? CurrentChanged
+        {
+            add { EventCurrentChanged += value; }
+            remove
+            {
+                if (value == null) { return; }
+                EventCurrentChanged -= value;
+            }
+        }
+
+        // 新建桌面事件
+        public delegate void CreatedHandler(Desktop createdDesktop);
+        private static event CreatedHandler? EventCreated;
+        public static event CreatedHandler? Created
+        {
+            add { EventCreated += value; }
+            remove
+            {
+                if (value == null) { return; }
+                EventCreated -= value;
+            }
+        }
+
+        // 删除桌面事件
+        public delegate void RemovedHandler(Desktop removedDesktop);
+        private static event RemovedHandler? EventRemoved;
+        public static event RemovedHandler? Removed
+        {
+            add { EventRemoved += value; }
+            remove { EventRemoved -= value; }
+        }
         static VirtualDesktop()
         {
+            NowDesktop = GetNowDesktop();
+            Desktops = UpdateDesktops();
             // 注册 注册表监听器
             var currentUser = WindowsIdentity.GetCurrent();
+
             if (currentUser.User == null)
             {
                 throw new Exception("无法获取用户信息");
             }
+            // 查询当前桌面的更改
             VirtualDesktop.changedQuery = new WqlEventQuery(string.Format(
-                "SELECT * FROM RegistryValueChangeEvent WHERE Hive='HKEY_USERS' AND KeyPath='{0}\\\\{1}' AND ValueName='{2}'",
+                        "SELECT * FROM RegistryValueChangeEvent WHERE Hive='HKEY_USERS' AND KeyPath='{0}\\\\{1}' AND ValueName='{2}'",
                 currentUser.User.Value, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops".Replace("\\", "\\\\"), "CurrentVirtualDesktop"));
+            // 查询桌面是否增加和删减
             VirtualDesktop.creatOrRmQuery = new WqlEventQuery(string.Format(
                 "SELECT * FROM RegistryTreeChangeEvent WHERE Hive='HKEY_USERS' AND RootPath='{0}\\\\{1}'",
                  currentUser.User.Value, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops\Desktops".Replace("\\", "\\\\")));
 
             var _watcher = new ManagementEventWatcher(VirtualDesktop.changedQuery);
-            _watcher.EventArrived += (sender, args) =>
-            {
-                Program.Logger.Debug("切换桌面");
-            };
+            // 切换桌面的时候就会触发，但是事件的参数没有什么有价值的内容，所以使用丢弃
+            _watcher.EventArrived += (_, _) =>
+                    {
+                        var oldDesktop = NowDesktop;
+                        NowDesktop = GetNowDesktop();
+                        VirtualDesktop.EventCurrentChanged?.Invoke(oldDesktop, NowDesktop);
+                    };
             _watcher.Start();
+            // 桌面有增减时触发
             var _watcher2 = new ManagementEventWatcher(VirtualDesktop.creatOrRmQuery);
-            _watcher2.EventArrived += (sender, args) =>
+            _watcher2.EventArrived += (_, _) =>
             {
-                Program.Logger.Debug("创建桌面");
             };
             _watcher2.Start();
-            var guidList = GetDeskGuid();
-            foreach (var guid in guidList)
-            {
-                var desk = new Desktop(guid);
-                VirtualDesktop.Desktops.Add(desk);
-            }
-
-            NowDesktop = GetNowDesktop();
         }
-        static private List<Guid> GetDeskGuid()
+        static private HashSet<Desktop> UpdateDesktops()
         {
-            List<Guid> list = new();
+            HashSet<Desktop> set = new();
+            var guids = GetDeskGuid();
+            foreach (var guid in guids)
+            {
+                set.Add(new Desktop(guid));
+            }
+            return set;
+        }
+        // 获取所有桌面的GUID
+        static private HashSet<Guid> GetDeskGuid()
+        {
+            HashSet<Guid> HashSet = new();
             var reg = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops\Desktops");
-            if (reg == null)
+            using (reg)
             {
-                return list;
+                if (reg == null)
+                {
+                    return HashSet;
+                }
+                foreach (string guid in reg.GetSubKeyNames())
+                {
+                    HashSet.Add(Guid.Parse(guid));
+                }
+                return HashSet;
             }
-            foreach (string guid in reg.GetSubKeyNames())
-            {
-                list.Add(Guid.Parse(guid));
-            }
-            return list;
+
         }
 
+        // 获取当前所在的桌面
         private static Desktop GetNowDesktop()
         {
             var reg = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops");
-            if (reg == null)
+            using (reg)
             {
-                throw new Exception("无法获取当前桌面, 注册表项为空。");
+                if (reg == null)
+                {
+                    throw new Exception("无法获取当前桌面, 注册表项为空。");
+                }
+                if (reg.GetValue("CurrentVirtualDesktop") is not byte[] b)
+                {
+                    throw new Exception("当前桌面的值为空");
+                }
+                return new Desktop(ByteToGuid(b));
             }
-            if (reg.GetValue("CurrentVirtualDesktop") is not byte[] b)
-            {
-                throw new Exception("当前桌面的值为空");
-            }
-            return new Desktop(ByteToGuid(b));
         }
+
+        /*
+         * Guid的字节数组的字符串形式转换回GUID
+         * 用于转换 Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops 中 CurrentVirtualDesktop 的值为 GUID
+        */
         public static Guid ByteToGuid(byte[] bytes)
         {
             string[] strs = new string[8] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, };
@@ -94,46 +154,48 @@ namespace AutoVDesktop.VirtualDesktop
             strs[7] = Convert.ToString(bytes[14], 16).PadLeft(2, '0') + Convert.ToString(bytes[15], 16).PadLeft(2, '0');
             return new Guid(String.Format("{0}{1}-{2}-{3}-{4}-{5}{6}{7}", strs[0], strs[1], strs[2], strs[3], strs[4], strs[5], strs[6], strs[7]));
         }
-        class CurrentChangedObj
-        {
-            public Desktop OldDesktop { get; private set; }
-            public Desktop NewDesktop { get; private set; }
-            public CurrentChangedObj(Desktop oldDesk, Desktop newDesk)
-            {
-                OldDesktop = oldDesk;
-                NewDesktop = newDesk;
-            }
-        }
     }
     class Desktop
     {
         public string Name { get; private set; }
         public string Wallpaper { get; private set; }
         public Guid Guid { get; private set; }
-        private readonly RegistryKey reg;
         public Desktop(Guid guid)
         {
-
             Guid = guid;
-
-            var r = Registry.CurrentUser.OpenSubKey($@"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops\Desktops\{{{guid}}}",true);
-            if (r == null)
+            var reg = Registry.CurrentUser.OpenSubKey($@"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops\Desktops\{{{guid}}}", true);
+            using (reg)
             {
-                throw new Exception("无法打开桌面的注册表项: Guid=" + guid);
+                if (reg == null)
+                {
+                    throw new Exception("无法打开桌面的注册表项: Guid=" + guid);
+                }
+                var _name = reg.GetValue("Name");
+                if (_name == null)
+                {
+                    _name = String.Empty;
+                }
+                var _wallpaper = reg.GetValue("Wallpaper");
+                if (_wallpaper == null)
+                {
+                    _wallpaper = String.Empty;
+                }
+                Name = (string)_name;
+                Wallpaper = (string)_wallpaper;
             }
-            reg = r;
-            var _name = r.GetValue("Name");
-            if (_name == null)
-            {
-                throw new Exception("桌面名称为空");
-            }
-            var _wallpaper = r.GetValue("Wallpaper");
-            if (_wallpaper == null)
-            {
-                throw new Exception("桌面壁纸为空");
-            }
-            Name = (string)_name;
-            Wallpaper = (string)_wallpaper;
+        }
+        public override string ToString()
+        {
+            return $"Name=\"{Name}\",Wallpaper=\"{Wallpaper}\"";
+        }
+        public override int GetHashCode()
+        {
+            return Guid.GetHashCode();
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) { return false; }
+            return Guid.GetHashCode()==obj.GetHashCode();
         }
     }
 

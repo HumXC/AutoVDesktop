@@ -40,7 +40,7 @@ namespace AutoVDesktop
                 Environment.Exit(0);
             }
 
-
+            ApplicationConfiguration.Initialize();
             InitConf(config);
             /*            VirtualDesktop.CurrentChanged += (_, args) =>
                         {
@@ -48,7 +48,18 @@ namespace AutoVDesktop
                             ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(args.NewDesktop.Name, threadID); });
                             ++threadID;
                         };*/
-            Logger.Debug(VirtualDesktop.VirtualDesktop.NowDesktop.Name);
+
+            VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop,newDesktop) =>
+            {
+                Logger.Debug("更换桌面"+VirtualDesktop.VirtualDesktop.NowDesktop.Name);
+            };
+            VirtualDesktop.VirtualDesktop.Created += (desktop) =>
+            {
+                Logger.Debug("新增桌面" + desktop.Name);
+            };
+            VirtualDesktop.VirtualDesktop.Removed+=(desktop) => {
+                Logger.Debug("移除桌面" + desktop.Name);
+            };
             Application.Run(new OptionView());
 
         }
