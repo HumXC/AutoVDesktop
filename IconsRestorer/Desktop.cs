@@ -124,7 +124,6 @@ namespace AutoVDesktop.IconsRestorer
                 var iconIndex = _currentIconsOrder.IndexOf(position.Name);
                 if (iconIndex == -1)
                 { continue; }
-
                 Win32.SendMessage(_desktopHandle, Win32.LVM_SETITEMPOSITION, iconIndex, Win32.MakeLParam(position.X, position.Y));
             }
         }
