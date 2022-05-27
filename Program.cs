@@ -42,23 +42,11 @@ namespace AutoVDesktop
 
             ApplicationConfiguration.Initialize();
             InitConf(config);
-            /*            VirtualDesktop.CurrentChanged += (_, args) =>
-                        {
-                            Logger.Debug($"线程{threadID}: 切换桌面: {args.OldDesktop.Name} -> {args.NewDesktop.Name}");
-                            ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(args.NewDesktop.Name, threadID); });
-                            ++threadID;
-                        };*/
-
-            VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop,newDesktop) =>
+            VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
             {
-                Logger.Debug("更换桌面"+VirtualDesktop.VirtualDesktop.NowDesktop.Name);
-            };
-            VirtualDesktop.VirtualDesktop.Created += (desktop) =>
-            {
-                Logger.Debug("新增桌面" + desktop.Name);
-            };
-            VirtualDesktop.VirtualDesktop.Removed+=(desktop) => {
-                Logger.Debug("移除桌面" + desktop.Name);
+                Logger.Debug($"线程{threadID}: 切换桌面: {oldDesktop.Name} -> {newDesktop.Name}");
+                ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(newDesktop.Name, threadID); });
+                ++threadID;
             };
             Application.Run(new OptionView());
 

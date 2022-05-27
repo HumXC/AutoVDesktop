@@ -13,11 +13,10 @@ namespace AutoVDesktop.VirtualDesktop
     internal class VirtualDesktop
     {
         private static readonly WqlEventQuery changedQuery;
-
         private static readonly WqlEventQuery creatOrRmQuery;
 
         public static Desktop NowDesktop { get; private set; }
-        public static HashSet<Desktop> Desktops { get; private set; } = new();
+        public static List<Desktop> Desktops { get; private set; } = new();
 
         // 当前桌面改变事件
         public delegate void CurrentChangedHandler(Desktop lastDesktop, Desktop newDesktop);
@@ -30,28 +29,6 @@ namespace AutoVDesktop.VirtualDesktop
                 if (value == null) { return; }
                 EventCurrentChanged -= value;
             }
-        }
-
-        // 新建桌面事件
-        public delegate void CreatedHandler(Desktop createdDesktop);
-        private static event CreatedHandler? EventCreated;
-        public static event CreatedHandler? Created
-        {
-            add { EventCreated += value; }
-            remove
-            {
-                if (value == null) { return; }
-                EventCreated -= value;
-            }
-        }
-
-        // 删除桌面事件
-        public delegate void RemovedHandler(Desktop removedDesktop);
-        private static event RemovedHandler? EventRemoved;
-        public static event RemovedHandler? Removed
-        {
-            add { EventRemoved += value; }
-            remove { EventRemoved -= value; }
         }
         static VirtualDesktop()
         {
@@ -86,18 +63,19 @@ namespace AutoVDesktop.VirtualDesktop
             var _watcher2 = new ManagementEventWatcher(VirtualDesktop.creatOrRmQuery);
             _watcher2.EventArrived += (_, _) =>
             {
+                Desktops = UpdateDesktops();
             };
             _watcher2.Start();
         }
-        static private HashSet<Desktop> UpdateDesktops()
+        static private List<Desktop> UpdateDesktops()
         {
-            HashSet<Desktop> set = new();
+            List<Desktop> desktops = new();
             var guids = GetDeskGuid();
             foreach (var guid in guids)
             {
-                set.Add(new Desktop(guid));
+                desktops.Add(new Desktop(guid));
             }
-            return set;
+            return desktops;
         }
         // 获取所有桌面的GUID
         static private HashSet<Guid> GetDeskGuid()
