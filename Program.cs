@@ -21,27 +21,6 @@ namespace AutoVDesktop
         [STAThread]
         static void Main()
         {
-            /* TODO:
-             * 程序目前已经可用，但仍留有一些问题需要解决。
-             * 在 桌面右键->查看->将图标对齐到网格 选项开启时，会存在图标错位的问题。
-             * 因为在更换桌面路径的时候，会自动排列桌面图标，如果这个选项开启，则可能出现某个图标的新位置已经被占领的情况，引起错位
-             * 好像已经找到了解决方法，就是在图标重新安排位置之前关闭这个选项先。
-             * 计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Bags\1\Desktop
-             * FFlags
-             * 
-             * 有3个设置选项
-             * 1 - 自动排列图标
-             * 2 - 将图标与网格对齐
-             * 3 - 显示桌面图标
-             * 0x40201220 - 全关
-             * 0x40200220 - 3
-             * 0x40200221 - 3.1
-             * 0x40200224 - 3.2
-             * 0x40200225 - 3.1.2
-             * 
-             * 不过我隐约感觉这不是最佳的处理方式，有空再思考了。
-             */
-
             Process[] processes = System.Diagnostics.Process.GetProcessesByName(Application.CompanyName);
             if (processes.Length > 1)
             {

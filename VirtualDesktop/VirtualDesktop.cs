@@ -13,8 +13,6 @@ namespace AutoVDesktop.VirtualDesktop
     internal class VirtualDesktop
     {
         private static readonly WqlEventQuery changedQuery;
-        private static readonly WqlEventQuery creatOrRmQuery;
-
         public static Desktop NowDesktop { get; private set; }
         public static List<Desktop> Desktops { get; private set; } = new();
 
@@ -45,11 +43,6 @@ namespace AutoVDesktop.VirtualDesktop
             VirtualDesktop.changedQuery = new WqlEventQuery(string.Format(
                         "SELECT * FROM RegistryValueChangeEvent WHERE Hive='HKEY_USERS' AND KeyPath='{0}\\\\{1}' AND ValueName='{2}'",
                 currentUser.User.Value, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops".Replace("\\", "\\\\"), "CurrentVirtualDesktop"));
-            // 查询桌面是否增加和删减
-            VirtualDesktop.creatOrRmQuery = new WqlEventQuery(string.Format(
-                "SELECT * FROM RegistryTreeChangeEvent WHERE Hive='HKEY_USERS' AND RootPath='{0}\\\\{1}'",
-                 currentUser.User.Value, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops\Desktops".Replace("\\", "\\\\")));
-
             var _watcher = new ManagementEventWatcher(VirtualDesktop.changedQuery);
             // 切换桌面的时候就会触发，但是事件的参数没有什么有价值的内容，所以使用丢弃
             _watcher.EventArrived += (_, _) =>
@@ -59,13 +52,6 @@ namespace AutoVDesktop.VirtualDesktop
                         VirtualDesktop.EventCurrentChanged?.Invoke(oldDesktop, NowDesktop);
                     };
             _watcher.Start();
-            // 桌面有增减时触发
-            var _watcher2 = new ManagementEventWatcher(VirtualDesktop.creatOrRmQuery);
-            _watcher2.EventArrived += (_, _) =>
-            {
-                Desktops = UpdateDesktops();
-            };
-            _watcher2.Start();
         }
         static private List<Desktop> UpdateDesktops()
         {
@@ -173,7 +159,7 @@ namespace AutoVDesktop.VirtualDesktop
         public override bool Equals(object? obj)
         {
             if (obj == null) { return false; }
-            return Guid.GetHashCode()==obj.GetHashCode();
+            return Guid.GetHashCode() == obj.GetHashCode();
         }
     }
 
