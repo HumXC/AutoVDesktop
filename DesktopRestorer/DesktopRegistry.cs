@@ -7,11 +7,11 @@ namespace AutoVDesktop.DesktopRestorer
     internal class DesktopRegistry
     {
         private const string KeyName = @"Software\Microsoft\Windows\Shell\Bags\1\Desktop";
-        readonly XmlSerializer serializer = new (typeof(string));
+        private readonly BinaryFormatter _formatter = new();
         public IDictionary<string, string>? GetRegistryValues()
         {
             using var registry = Registry.CurrentUser.OpenSubKey(KeyName);
-            if(registry == null)
+            if (registry == null)
             {
                 return null;
             }
@@ -25,9 +25,7 @@ namespace AutoVDesktop.DesktopRestorer
             { return string.Empty; }
 
             using var stream = new MemoryStream();
-            
-            serializer.Serialize(stream, value);
-
+            _formatter.Serialize(stream, value);
             var bytes = stream.ToArray();
 
             return Convert.ToBase64String(bytes);
@@ -55,7 +53,7 @@ namespace AutoVDesktop.DesktopRestorer
             var bytes = Convert.FromBase64String(stringValue);
 
             using var stream = new MemoryStream(bytes);
-            return serializer.Deserialize(stream);
+            return _formatter.Deserialize(stream);
         }
     }
 }

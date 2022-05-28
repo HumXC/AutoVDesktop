@@ -12,7 +12,7 @@ namespace AutoVDesktop.DesktopRestorer
             public static Guid Desktop = new("B4BFCC3A-DB2C-424C-B029-7FE99A87C641");
         }
         public const uint WM_KEYDOWN = 0x0100;
-        
+
         public const int VK_F5 = 0x74;
 
         public const uint LVM_GETITEMCOUNT = 0x1000 + 4;
@@ -35,13 +35,13 @@ namespace AutoVDesktop.DesktopRestorer
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetShellWindow();
-        
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-        
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
@@ -53,7 +53,6 @@ namespace AutoVDesktop.DesktopRestorer
 
             IntPtr currentUserToken = WindowsIdentity.GetCurrent().Token;
             _ = SHSetKnownFolderPath(ref KnownFolder.Desktop, (uint)0, currentUserToken, fullPath);
-             _ = SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
         }
         public static IntPtr GetDesktopWindow(DesktopWindow desktopWindow)
         {
@@ -65,23 +64,23 @@ namespace AutoVDesktop.DesktopRestorer
             if (_SHELLDLL_DefView == IntPtr.Zero)
             {
                 EnumWindows((hwnd, lParam) =>
-                {
-                    var sb = new StringBuilder(256);
-                    _ = GetClassName(hwnd, sb, sb.Capacity);
+            {
+                var sb = new StringBuilder(256);
+                _ = GetClassName(hwnd, sb, sb.Capacity);
 
-                    if (sb.ToString() == "WorkerW")
+                if (sb.ToString() == "WorkerW")
+                {
+                    IntPtr child = FindWindowEx(hwnd, IntPtr.Zero, "SHELLDLL_DefView", null);
+                    if (child != IntPtr.Zero)
                     {
-                        IntPtr child = FindWindowEx(hwnd, IntPtr.Zero, "SHELLDLL_DefView", null);
-                        if (child != IntPtr.Zero)
-                        {
-                            _SHELLDLL_DefViewParent = hwnd;
-                            _SHELLDLL_DefView = child;
-                            _SysListView32 = FindWindowEx(child, IntPtr.Zero, "SysListView32", "FolderView"); ;
-                            return false;
-                        }
+                        _SHELLDLL_DefViewParent = hwnd;
+                        _SHELLDLL_DefView = child;
+                        _SysListView32 = FindWindowEx(child, IntPtr.Zero, "SysListView32", "FolderView"); ;
+                        return false;
                     }
-                    return true;
-                }, IntPtr.Zero);
+                }
+                return true;
+            }, IntPtr.Zero);
             }
 
             return desktopWindow switch
@@ -262,10 +261,10 @@ namespace AutoVDesktop.DesktopRestorer
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern Int32 ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] IntPtr buffer, int size, ref uint lpNumberOfBytesRead);
-        
+
         [DllImport("Shell32.dll")]
         public static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
-        
+
         [DllImport("user32.dll")]
         public static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
     }

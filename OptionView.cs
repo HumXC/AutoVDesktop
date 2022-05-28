@@ -37,7 +37,7 @@ namespace AutoVDesktop
             startWithWindows.Checked = Program.config.StartWithWindows;
             inputDelay.Text = Program.config.Delay.ToString();
             debugMode.Checked = Program.config.DebugMode;
-            restorerIcon.Checked = Program.config.RestoreIcon;
+            restorerIcon.Checked = Program.config.RestoreDesktop;
             showNotifyIcon.Checked = Program.config.ShowNotifyIcon;
         }
 
@@ -115,7 +115,7 @@ namespace AutoVDesktop
             Program.config.Delay = delay;
             Program.config.DebugMode = debugMode.Checked;
             Program.config.ShowNotifyIcon = showNotifyIcon.Checked;
-            Program.config.RestoreIcon = restorerIcon.Checked;
+            Program.config.RestoreDesktop = restorerIcon.Checked;
             List<string> list = new();
             foreach (string desktopName in desktopList.Items)
             {
@@ -161,14 +161,6 @@ namespace AutoVDesktop
 
         }
 
-        // 手动切换到指定桌面
-        private void ChangeToSelect_Click(object sender, EventArgs e)
-        {
-            var desktopName = changeToSelect.Text;
-            if (desktopName.Equals("")) return;
-            
-        }
-
         // 以下是通知栏图标的相关内容
         private void 选项ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -201,18 +193,21 @@ namespace AutoVDesktop
             new Info().Show();
         }
 
-        private void startWithWindows_CheckedChanged(object sender, EventArgs e)
+        private void DelDesktop_MouseHover(object sender, EventArgs e)
         {
 
-        }
+            // 创建the ToolTip 
+            ToolTip toolTip1 = new()
+            {
+                // 设置显示样式
+                AutoPopDelay = 5000,//提示信息的可见时间
+                InitialDelay = 500,//事件触发多久后出现提示
+                ReshowDelay = 500,//指针从一个控件移向另一个控件时，经过多久才会显示下一个提示框
+                ShowAlways = true//是否显示提示框
+            };
 
-        private void restorerIcon_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void debugMode_CheckedChanged(object sender, EventArgs e)
-        {
+            //  设置伴随的对象.
+            toolTip1.SetToolTip(delDesktop, "从这里删除已经添加的桌面不会删除你的任何文件");//设置提示按钮和提示内容
 
         }
     }

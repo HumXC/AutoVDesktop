@@ -101,26 +101,20 @@ namespace AutoVDesktop.DesktopRestorer
                 try
                 {
                     listOfPoints.AddLast(new NamedDesktopPoint(_currentIconsOrder[itemIndex], point.X, point.Y));
-
                 }
                 catch (Exception e)
                 {
-
                     Program.Logger.Debug(e.Message + " index = " + itemIndex);
                     Program.Logger.Debug(listOfPoints.Count.ToString());
                 }
             }
-
             return listOfPoints.ToArray();
         }
 
         public void SetIconPositions(IEnumerable<NamedDesktopPoint> iconPositions)
         {
-
-
             foreach (var position in iconPositions)
             {
-                Program.Logger.Debug($"in File: {position.Name} ({position.X},{position.Y})");
                 var iconIndex = _currentIconsOrder.IndexOf(position.Name);
                 if (iconIndex == -1)
                 { continue; }
@@ -130,8 +124,8 @@ namespace AutoVDesktop.DesktopRestorer
 
         public static void Refresh()
         {
-            //使用F5刷新会导致图标错位
-            //Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);
+            // 使用f5刷新会导致无法获取到桌面图标信息
+            //_ = Win32.PostMessage(_desktopHandle, Win32.WM_KEYDOWN, Win32.VK_F5, 0);
             _ = Win32.SHChangeNotify(0x8000000, 0x1000, IntPtr.Zero, IntPtr.Zero);
         }
     }

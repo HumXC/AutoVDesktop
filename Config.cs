@@ -12,7 +12,7 @@ namespace AutoVDesktop
     {
         public List<string> Desktops { get; set; } = new List<string>();
         public int Delay { get; set; } = 1000;
-        public bool RestoreIcon { get; set; } = true;
+        public bool RestoreDesktop { get; set; } = true;
         public bool ShowNotifyIcon { get; set; } = true;
         public bool DebugMode { get; set; } = false;
         public bool StartWithWindows { get; set; } = false;
@@ -92,7 +92,7 @@ namespace AutoVDesktop
         }
         public override string ToString()
         {
-            return $"{Desktops} {Delay} {RestoreIcon} {ShowNotifyIcon} {DebugMode}";
+            return $"{Desktops} {Delay} {RestoreDesktop} {ShowNotifyIcon} {DebugMode}";
 
         }
 

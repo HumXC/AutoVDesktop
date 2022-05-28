@@ -16,18 +16,8 @@ namespace AutoVDesktop
         public static Config config = new();
         private static readonly object lockObj = new();
         private static int threadID = 0;
-        static private void registryEventHandler(object sender, EventArrivedEventArgs e)
-        {
-            Console.WriteLine("Received an event:");
 
-            //Iterate over the properties received from the event and print them out.
-            foreach (var prop in e.NewEvent.Properties)
-            {
-                Logger.Debug($"{prop.Name}:{prop.Value}");
-            }
-
-        }
-
+        private static string dataPath = Path.Combine(Environment.CurrentDirectory, "Desktops");
         [STAThread]
         static void Main()
         {
@@ -69,7 +59,7 @@ namespace AutoVDesktop
             };
             Application.Run(new OptionView());
         }
-        static void ChangeDesktop(string desktopName, int _threadID)
+        static void ChangeDesktop(string newDesktopName, int _threadID)
         {
             Thread.Sleep(config.Delay);
             if (threadID != _threadID)
@@ -81,9 +71,9 @@ namespace AutoVDesktop
             {
                 Logger.Debug($"线程{_threadID}: 获得锁,开始运行...");
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-                string oldDesktopName = Path.GetFileName(path);
+                string nowDesktopName = Path.GetFileName(path);
                 string? desktopPath = Path.GetDirectoryName(path);
-                if (desktopName.Equals(oldDesktopName))
+                if (newDesktopName.Equals(nowDesktopName))
                 {
                     Logger.Debug($"线程{_threadID}: 运行中断,因为当前桌面已经是目标桌面...");
                     Logger.Debug($"线程{_threadID}: 解锁...");
@@ -92,45 +82,48 @@ namespace AutoVDesktop
                 if (config.Desktops != null && desktopPath != null)
                     foreach (var item in config.Desktops)
                     {
-                        if (item.Equals(desktopName))
+                        if (item.Equals(newDesktopName))
                         {
-                            var fullNewDesktopPath = Path.Combine(desktopPath, desktopName);
+                            var fullNewDesktopPath = Path.Combine(desktopPath, newDesktopName);
                             if (!Directory.Exists(fullNewDesktopPath))
                             {
                                 Directory.CreateDirectory(fullNewDesktopPath);
                             }
-                            if (config.RestoreIcon)
+                            if (config.RestoreDesktop)
                             {
-                                SaveIcon(oldDesktopName);
-                               IconsRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
-                                SetIcon(desktopName);
-                               
+                                SaveDesktop(nowDesktopName);
+                                DesktopRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                DesktopRestorer.Desktop.Refresh();
+                                SetDesktop(newDesktopName);
                             }
                             else
                             {
-                                IconsRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                DesktopRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
                             }
 
                             Logger.Debug($"线程{_threadID}: 运行完毕，解锁...");
                             return;
                         }
                     }
-                Logger.Debug($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{desktopName}");
+                Logger.Debug($"线程{_threadID}: 运行结束,因为目标桌面没有在配置中...:{newDesktopName}");
                 return;
             }
         }
-        static void SaveIcon(string desktopName)
+        static DesktopRestorer.Desktop SaveDesktop(string desktopName)
         {
-            var desktop = new IconsRestorer.Desktop();
+            var desktop = new DesktopRestorer.Desktop();
             var iconPositions = desktop.GetIconsPositions();
+            Program.Logger.Debug("开始保存桌面图标位置: " + desktopName);
             Storage.SaveIconPositions(iconPositions, desktopName);
+            return desktop;
         }
-        static void SetIcon(string desktopName)
+        static DesktopRestorer.Desktop SetDesktop(string desktopName)
         {
-            var desktop = new IconsRestorer.Desktop();
-            var iconPositions = (NamedDesktopPoint[])Storage.GetIconPositions(desktopName);
+            var desktop = new DesktopRestorer.Desktop();
+            var iconPositions = Storage.GetIconPositions(Path.Combine(dataPath, desktopName + ".xml"));
             Program.Logger.Debug("开始恢复桌面图标位置: " + desktopName);
             desktop.SetIconPositions(iconPositions);
+            return desktop;
         }
         //初始化,检查配置文件
         static void InitConf(Config config)

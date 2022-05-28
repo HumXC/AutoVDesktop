@@ -6,7 +6,8 @@ namespace AutoVDesktop.DesktopRestorer
 {
     internal class Storage
     {
-        public static void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
+        // 保存桌面设置和图标位置
+        public static void SaveIconsAndRegistry(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
         {
             Program.Logger.Debug("开始保存图标位置: " + fileName);
             var xDoc = new XDocument(
@@ -41,6 +42,7 @@ namespace AutoVDesktop.DesktopRestorer
 
         }
 
+        // 仅保存图标位置
         public static void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
             Program.Logger.Debug("开始保存图标位置: " + fileName);
@@ -66,12 +68,11 @@ namespace AutoVDesktop.DesktopRestorer
 
         public static IEnumerable<NamedDesktopPoint> GetIconPositions(string fileName)
         {
-            string filePath = Path.Combine(Environment.CurrentDirectory, "Desktops", fileName + ".xml");
-            if (File.Exists(filePath) == false)
-            {
-                return Array.Empty<NamedDesktopPoint>();
-            }
-            using Stream inStream = File.OpenRead(filePath);
+            using var storage = IsolatedStorageFile.GetUserStoreForAssembly();
+            if (storage.FileExists(fileName) == false)
+            { return Array.Empty<NamedDesktopPoint>(); }
+
+            using Stream inStream = File.OpenRead(fileName);
             using var reader = XmlReader.Create(inStream);
             var xDoc = XDocument.Load(reader);
             return xDoc.Root.Element("Icons").Elements("Icon")
