@@ -128,7 +128,7 @@ namespace AutoVDesktop
             Program.config.Save();
 
             //开机自启
-            Microsoft.Win32.RegistryKey RKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            Microsoft.Win32.RegistryKey RKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
             var appName = Environment.ProcessPath;
             if (appName != null)
             {
