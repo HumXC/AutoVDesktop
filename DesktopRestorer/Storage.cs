@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Linq;
 
-namespace AutoVDesktop.IconsRestorer
+namespace AutoVDesktop.DesktopRestorer
 {
     internal class Storage
     {

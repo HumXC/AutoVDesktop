@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 
-namespace AutoVDesktop.IconsRestorer
+namespace AutoVDesktop.DesktopRestorer
 {
     internal static class Win32
     {

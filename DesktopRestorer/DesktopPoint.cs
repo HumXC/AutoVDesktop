@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace AutoVDesktop.IconsRestorer
+namespace AutoVDesktop.DesktopRestorer
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct DesktopPoint

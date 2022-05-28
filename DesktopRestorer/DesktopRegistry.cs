@@ -2,7 +2,7 @@
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 
-namespace AutoVDesktop.IconsRestorer
+namespace AutoVDesktop.DesktopRestorer
 {
     internal class DesktopRegistry
     {

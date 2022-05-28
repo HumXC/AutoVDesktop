@@ -2,7 +2,7 @@ namespace AutoVDesktop
 {
     using System.Threading;
     using System;
-    using AutoVDesktop.IconsRestorer;
+    using AutoVDesktop.DesktopRestorer;
     using System.Diagnostics;
     using Microsoft.Win32;
     using System.Management;

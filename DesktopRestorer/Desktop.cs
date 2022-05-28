@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Automation;
 
-namespace AutoVDesktop.IconsRestorer
+namespace AutoVDesktop.DesktopRestorer
 {
     internal class Desktop
     {
