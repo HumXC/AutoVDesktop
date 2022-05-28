@@ -78,6 +78,7 @@ namespace AutoVDesktop
                             else
                             {
                                 DesktopRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
+                                DesktopRestorer.Desktop.Refresh();
                             }
 
                             Logger.Debug($"线程{_threadID}: 运行完毕，解锁...");
