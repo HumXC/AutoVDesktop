@@ -70,9 +70,10 @@ namespace AutoVDesktop
                             }
                             if (config.RestoreDesktop)
                             {
-                                SaveDesktop(nowDesktopName);
+                                var iconCount = SaveDesktop(nowDesktopName).IconCount;
                                 DesktopRestorer.Win32.ChangeDesktopFolder(fullNewDesktopPath);
                                 DesktopRestorer.Desktop.Refresh();
+                                if (iconCount < 8) { Thread.Sleep(200); }
                                 SetDesktop(newDesktopName);
                             }
                             else
@@ -102,6 +103,11 @@ namespace AutoVDesktop
             var desktop = new DesktopRestorer.Desktop();
             var iconPositions = Storage.GetIconPositions(Path.Combine(dataPath, desktopName + ".xml"));
             Program.Logger.Debug("开始恢复桌面图标位置: " + desktopName);
+            if (config.EnsureRestore)
+            {
+                desktop.EnsureSetIconPositions(iconPositions);
+                return desktop;
+            }
             desktop.SetIconPositions(iconPositions);
             return desktop;
         }

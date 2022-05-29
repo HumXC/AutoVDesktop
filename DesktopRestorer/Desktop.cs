@@ -11,7 +11,7 @@ namespace AutoVDesktop.DesktopRestorer
     {
         private readonly IntPtr _desktopHandle;
         private readonly List<string> _currentIconsOrder;
-
+        public readonly int IconCount;
         public Desktop()
         {
             _desktopHandle = Win32.GetDesktopWindow(Win32.DesktopWindow.SysListView32);
@@ -27,6 +27,7 @@ namespace AutoVDesktop.DesktopRestorer
                 _currentIconsOrder.Add(child.Current.Name);
             }
             Program.Logger.Debug($"创建新的桌面对象，当前获取桌面图标个数: {_currentIconsOrder.Count}");
+            IconCount = _currentIconsOrder.Count;
         }
 
         private int GetIconsNumber()
@@ -121,6 +122,37 @@ namespace AutoVDesktop.DesktopRestorer
                 Win32.SendMessage(_desktopHandle, Win32.LVM_SETITEMPOSITION, iconIndex, Win32.MakeLParam(position.X, position.Y));
             }
         }
+
+        // 确保恢复时图标位置的准确性
+        public void EnsureSetIconPositions(IEnumerable<NamedDesktopPoint> iconPositions)
+        {
+            SetIconPositions(iconPositions);
+
+            while (true)
+            {
+                var nowPostions = new List<NamedDesktopPoint>(GetIconsPositions());
+                var bad = new List<NamedDesktopPoint>();
+                foreach (var item in iconPositions)
+                {
+                    if (nowPostions.IndexOf(item) == -1)
+                    {
+                        bad.Add(item);
+                    }
+                }
+                if (bad.Count == 0)
+                {
+                    return;
+                }
+                foreach (var position in bad)
+                {
+                    var iconIndex = _currentIconsOrder.IndexOf(position.Name);
+                    if (iconIndex == -1)
+                    { continue; }
+                    Win32.SendMessage(_desktopHandle, Win32.LVM_SETITEMPOSITION, iconIndex, Win32.MakeLParam(position.X, position.Y));
+                }
+            }
+        }
+
 
         public static void Refresh()
         {

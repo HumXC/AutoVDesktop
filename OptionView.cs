@@ -37,7 +37,7 @@ namespace AutoVDesktop
             startWithWindows.Checked = Program.config.StartWithWindows;
             inputDelay.Text = Program.config.Delay.ToString();
             debugMode.Checked = Program.config.DebugMode;
-            restorerIcon.Checked = Program.config.RestoreDesktop;
+            restoreDesktop.Checked = Program.config.RestoreDesktop;
             showNotifyIcon.Checked = Program.config.ShowNotifyIcon;
         }
 
@@ -115,7 +115,8 @@ namespace AutoVDesktop
             Program.config.Delay = delay;
             Program.config.DebugMode = debugMode.Checked;
             Program.config.ShowNotifyIcon = showNotifyIcon.Checked;
-            Program.config.RestoreDesktop = restorerIcon.Checked;
+            Program.config.RestoreDesktop = restoreDesktop.Checked;
+            Program.config.EnsureRestore = ensureRestore.Checked;
             List<string> list = new();
             foreach (string desktopName in desktopList.Items)
             {

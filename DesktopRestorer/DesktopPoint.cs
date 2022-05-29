@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace AutoVDesktop.DesktopRestorer
 {
@@ -26,6 +27,27 @@ namespace AutoVDesktop.DesktopRestorer
             this.Name = name;
             this.X = x;
             this.Y = y;
+        }
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            if (obj == null) return false;
+            if (obj.GetType() != GetType()) return false;
+            NamedDesktopPoint other = (NamedDesktopPoint)obj;
+            return Name.Equals(other.Name) && X == other.X && Y == other.Y;
+        }
+        public override int GetHashCode()
+        {
+            return (Name + X.ToString() + Y.ToString()).GetHashCode();
+        }
+
+        public static bool operator ==(NamedDesktopPoint left, NamedDesktopPoint right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(NamedDesktopPoint left, NamedDesktopPoint right)
+        {
+            return !(left == right);
         }
     }
 }
