@@ -10,19 +10,19 @@ Quickly change files and ICONS on the desktop after switching desktops using Win
 
 ## 使用演示
 
-![使用演示](https://github.com/HumXC/AutoVDesktop/Readme/demo.gif)
+![使用演示](https://raw.githubusercontent.com/HumXC/AutoVDesktop/main/Readme/demo.gif)
 
 ## 注意事项
 
 -   程序依赖 .NET 6.0 环境，如果没有则程序会弹出如下提示，点击确定后[跳转到](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0/runtime?cid=getdotnetcore)浏览器下载 Run desktop apps 的运行时(Runtime)：
-    ![.NET6下载页](https://github.com/HumXC/AutoVDesktop/Readme/dotNET6_download_page.png)
+    ![.NET6下载页](https://raw.githubusercontent.com/HumXC/AutoVDesktop/main/Readme/dotNET6_download_page.png)
 -   该程序只会修改程序目录下的文件，不会删除和增加你其他地方的任何文件。
 -   如果你不知道 JSON，我不建议你继续使用。
 -   使用时尽量不要用桌面右键或者 F5 刷新。
 -   该程序对桌面上图标和文件特别多的用户会有帮助。（比如你的桌面全被图标占满了！）
 -   你必须知道你的 PC 当前桌面的路径，一般在"C:\用户\用户名\Desktop"，程序运行时创建的桌面文件夹会在默认桌面的父文件夹下。如果你在配置文件里添加了一个"Game"桌面，那么这个桌面的路径就会在"C:\用户\用户名\Game"。如果你不清楚，则不建议使用。
 -   使用之前建议先修改桌面位置到一个单独的目录下，具体方法：[设置桌面路径](https://zhuanlan.zhihu.com/p/78243921)。比如我的将桌面路径设置为“D:\\\\Desktops\Code"那么在切换到 Game 桌面后生成的 Game 桌面文件夹就会在 Code 文件夹的同级目录下:
-    ![设置桌面位置](https://github.com/HumXC/AutoVDesktop/Readme/setting_desktop_path.png)
+    ![设置桌面位置](https://raw.githubusercontent.com/HumXC/AutoVDesktop/main/Readme/setting_desktop_path.png)
 
 ## 常见问题
 
