@@ -39,6 +39,7 @@ namespace AutoVDesktop
             debugMode.Checked = Program.config.DebugMode;
             restoreDesktop.Checked = Program.config.RestoreDesktop;
             showNotifyIcon.Checked = Program.config.ShowNotifyIcon;
+            ensureRestore.Checked = Program.config.EnsureRestore;
         }
 
         private void OpenConfFile_Click(object sender, EventArgs e)
@@ -210,6 +211,14 @@ namespace AutoVDesktop
             //  设置伴随的对象.
             toolTip1.SetToolTip(delDesktop, "从这里删除已经添加的桌面不会删除你的任何文件");//设置提示按钮和提示内容
 
+        }
+
+        private void InputDesktopName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                AddDesktop_Click(sender, e);
+            }
         }
     }
 }
