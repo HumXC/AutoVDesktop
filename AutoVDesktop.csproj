@@ -1,60 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>True</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Platforms>AnyCPU;x64</Platforms>
-    <StartupObject>AutoVDesktop.Program</StartupObject>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>True</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Platforms>AnyCPU;x64</Platforms>
+		<StartupObject>AutoVDesktop.Program</StartupObject>
+		<ApplicationIcon>Icon.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <COMReference Include="SHDocVw">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>1</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>eab22ac0-30c1-11cf-a7eb-0000c05bae0b</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Icon.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Icon.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Management" Version="6.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Management" Version="6.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="UIAutomationClient">
+			<HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF\UIAutomationClient.dll</HintPath>
+			<Private>True</Private>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="UIAutomationClient">
-      <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF\UIAutomationClient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="VirtualDesktop">
-      <HintPath>..\..\VirtualDesktop\source\VirtualDesktop\bin\Release\net472\VirtualDesktop.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>

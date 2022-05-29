@@ -5,11 +5,6 @@ namespace AutoVDesktop
     using AutoVDesktop.DesktopRestorer;
     using System.Diagnostics;
     using Microsoft.Win32;
-    using System.Management;
-    using AutoVDesktop.VirtualDesktop;
-    using System.Security.Principal;
-    using System.Text;
-
     internal static class Program
     {
 
