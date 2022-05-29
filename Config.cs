@@ -13,11 +13,16 @@ namespace AutoVDesktop
         public bool ShowNotifyIcon { get; set; } = true;
         public bool DebugMode { get; set; } = false;
         public bool StartWithWindows { get; set; } = false;
-        public readonly string confFileName = Path.Combine(Environment.CurrentDirectory, "config.json");
-
-
+        public readonly string confFileName;
         public Config()
         {
+            var path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            if (path == null)
+            {
+                throw new Exception("无法读取程序运行目录");
+            }
+            confFileName = Path.Combine(path, "config.json");
+
             // 检查文件夹名的合法性
             foreach (var desktopName in Desktops)
             {
@@ -50,6 +55,7 @@ namespace AutoVDesktop
                         this.Delay = c.Delay;
                         this.StartWithWindows = c.StartWithWindows;
                         this.Desktops = c.Desktops;
+                        this.EnsureRestore = c.EnsureRestore;
                     }
 
                 }

@@ -21,22 +21,17 @@ namespace AutoVDesktop.DesktopRestorer
                         registryValues.Select(p => new XElement("Value",
                             new XElement("Name", new XCData(p.Key)),
                             new XElement("Data", new XCData(p.Value)))))));
-            string filePath = Path.Combine(Environment.CurrentDirectory, "Desktops", fileName + ".xml");
-            if (File.Exists(filePath))
+            if (File.Exists(fileName))
             {
-                File.Delete(filePath);
+                File.Delete(fileName);
             }
-            else if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+            var dir = Path.GetDirectoryName(fileName);
+            if (dir == null)
             {
-                var dirName = Path.GetDirectoryName(filePath);
-                if (dirName != null)
-                {
-                    Directory.CreateDirectory(dirName);
-                }
-
-
+                throw new Exception("找不到文件的父目录: \n" + fileName);
             }
-            using Stream outStream = File.OpenWrite(filePath);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            using Stream outStream = File.OpenWrite(fileName);
             using var writer = XmlWriter.Create(outStream);
             xDoc.WriteTo(writer);
 
@@ -53,14 +48,17 @@ namespace AutoVDesktop.DesktopRestorer
                             new XAttribute("x", p.X),
                             new XAttribute("y", p.Y),
                             new XText(p.Name))))));
-            string fileDir = Path.Combine(Environment.CurrentDirectory, "Desktops");
-            string filePath = Path.Combine(fileDir, fileName + ".xml");
-            if (File.Exists(filePath))
+            if (File.Exists(fileName))
             {
-                File.Delete(filePath);
+                File.Delete(fileName);
             }
-            else if (!Directory.Exists(filePath)) Directory.CreateDirectory(fileDir);
-            using Stream outStream = File.OpenWrite(filePath);
+            var dir = Path.GetDirectoryName(fileName);
+            if (dir == null)
+            {
+                throw new Exception("找不到文件的父目录: \n" + fileName);
+            }
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            using Stream outStream = File.OpenWrite(fileName);
             using var writer = XmlWriter.Create(outStream);
             xDoc.WriteTo(writer);
 

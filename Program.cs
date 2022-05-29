@@ -12,7 +12,17 @@ namespace AutoVDesktop
         private static readonly object lockObj = new();
         private static int threadID = 0;
 
-        private static readonly string dataPath = Path.Combine(Environment.CurrentDirectory, "Desktops");
+        private static readonly string dataPath;
+        static Program()
+        {
+            var path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            if (path == null)
+            {
+                MessageBox.Show("错误", "无法读取程序运行目录", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
+            dataPath = Path.Combine(path, "Desktops");
+        }
         [STAThread]
         static void Main()
         {
@@ -30,15 +40,26 @@ namespace AutoVDesktop
                 VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
                 {
                     Logger.Debug($"线程{threadID}: 切换桌面: {oldDesktop.Name} -> {newDesktop.Name}");
-                    ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(newDesktop.Name, threadID); });
+                    ThreadPool.QueueUserWorkItem((state) =>
+                    {
+                        try
+                        {
+                            ChangeDesktop(newDesktop.Name, threadID);
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show("错误", "切换桌面时出现错误: \n" + e.Message + "\n" + e.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Environment.Exit(1);
+                        }
+                    });
                     ++threadID;
                 };
                 Application.Run(new OptionView());
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error: \n" + e.Message + "\n" + e.StackTrace, "Error");
-                Process.GetCurrentProcess().Kill();
+                MessageBox.Show("错误", "错误: \n" + e.Message + "\n" + e.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
             }
 
         }
@@ -54,6 +75,7 @@ namespace AutoVDesktop
             {
                 Logger.Debug($"线程{_threadID}: 获得锁,开始运行...");
                 string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                Logger.Debug("Desktop_Path=" + path);
                 string nowDesktopName = Path.GetFileName(path);
                 string? desktopPath = Path.GetDirectoryName(path);
                 if (newDesktopName.Equals(nowDesktopName))
@@ -99,7 +121,7 @@ namespace AutoVDesktop
             var desktop = new DesktopRestorer.Desktop();
             var iconPositions = desktop.GetIconsPositions();
             Program.Logger.Debug("开始保存桌面图标位置: " + desktopName);
-            Storage.SaveIconPositions(iconPositions, desktopName);
+            Storage.SaveIconPositions(iconPositions, Path.Combine(dataPath, desktopName + ".xml"));
             return desktop;
         }
         static DesktopRestorer.Desktop SetDesktop(string desktopName)
@@ -131,7 +153,7 @@ namespace AutoVDesktop
                 MessageBox.Show("错误", "设置自启动失败, 无法打开注册表。", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            var appName = Environment.ProcessPath;
+            var appName = System.Windows.Forms.Application.ExecutablePath;
             if (appName == null)
             {
                 MessageBox.Show("错误", "设置自启动失败, 程序名为 null 。", MessageBoxButtons.OK, MessageBoxIcon.Error);

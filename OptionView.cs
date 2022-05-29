@@ -131,7 +131,7 @@ namespace AutoVDesktop
 
             //开机自启
             Microsoft.Win32.RegistryKey RKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-            var appName = Environment.ProcessPath;
+            var appName = System.Windows.Forms.Application.ExecutablePath;
             if (appName != null)
             {
                 var k = RKey.GetValue("AutoVDesktop");
@@ -155,7 +155,11 @@ namespace AutoVDesktop
                     }
                 }
             }
-
+            else
+            {
+                MessageBox.Show("错误", "设置自启动失败, 程序名为 null 。", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             if (!Program.config.DebugMode)
             {
                 this.Visible = false;
