@@ -89,7 +89,7 @@ namespace AutoVDesktop
         }
         public override string ToString()
         {
-            return $"{Desktops} {Delay} {RestoreDesktop} {ShowNotifyIcon} {DebugMode}";
+            return $"{Desktops} {Delay} {RestoreDesktop} {EnsureRestore} {ShowNotifyIcon} {DebugMode}";
 
         }
 
