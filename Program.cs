@@ -12,26 +12,35 @@ namespace AutoVDesktop
         private static readonly object lockObj = new();
         private static int threadID = 0;
 
-        private static string dataPath = Path.Combine(Environment.CurrentDirectory, "Desktops");
+        private static readonly string dataPath = Path.Combine(Environment.CurrentDirectory, "Desktops");
         [STAThread]
         static void Main()
         {
-            Process[] processes = System.Diagnostics.Process.GetProcessesByName(Application.CompanyName);
-            if (processes.Length > 1)
+            try
             {
-                MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
-                Environment.Exit(0);
+                Process[] processes = System.Diagnostics.Process.GetProcessesByName(Application.CompanyName);
+                if (processes.Length > 1)
+                {
+                    MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
+                    Environment.Exit(0);
+                }
+
+                ApplicationConfiguration.Initialize();
+                InitConf(config);
+                VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
+                {
+                    Logger.Debug($"线程{threadID}: 切换桌面: {oldDesktop.Name} -> {newDesktop.Name}");
+                    ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(newDesktop.Name, threadID); });
+                    ++threadID;
+                };
+                Application.Run(new OptionView());
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error: \n" + e.Message + "\n" + e.StackTrace, "Error");
+                Process.GetCurrentProcess().Kill();
             }
 
-            ApplicationConfiguration.Initialize();
-            InitConf(config);
-            VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
-            {
-                Logger.Debug($"线程{threadID}: 切换桌面: {oldDesktop.Name} -> {newDesktop.Name}");
-                ThreadPool.QueueUserWorkItem((state) => { ChangeDesktop(newDesktop.Name, threadID); });
-                ++threadID;
-            };
-            Application.Run(new OptionView());
         }
         static void ChangeDesktop(string newDesktopName, int _threadID)
         {
