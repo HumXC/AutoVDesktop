@@ -124,7 +124,7 @@ namespace AutoVDesktop.DesktopRestorer
         {
             SetIconPositions(iconPositions);
 
-            while (true)
+            for (int i = iconPositions.Count<NamedDesktopPoint>() - 1; i >= 0; i--)
             {
                 var nowPostions = new List<NamedDesktopPoint>(GetIconsPositions());
                 var bad = new List<NamedDesktopPoint>();
