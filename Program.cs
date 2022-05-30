@@ -6,7 +6,6 @@ namespace AutoVDesktop
 {
     internal static class Program
     {
-
         public static Config config = new();
         private static readonly object lockObj = new();
         private static int threadID = 0;

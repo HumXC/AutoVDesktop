@@ -20,16 +20,17 @@ namespace AutoVDesktop
             }
         }
 
-        // 窗口初始化
+        // 显示窗口
         private void OptionView_Shown(object sender, EventArgs e)
         {
             if (Program.config.DebugMode == false)
-                this.Hide();
+                Hide();
         }
 
         // 加载配置文件数据到窗口
         private void LoadConfig()
         {
+            desktopList.Items.Clear();
             foreach (var desktopName in Program.config.Desktops)
             {
                 desktopList.Items.Add(desktopName);
@@ -162,7 +163,7 @@ namespace AutoVDesktop
             }
             if (!Program.config.DebugMode)
             {
-                this.Visible = false;
+                Visible = false;
             }
 
         }
@@ -178,7 +179,8 @@ namespace AutoVDesktop
         // 以下是通知栏图标的相关内容
         private void 选项ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Show();
+            LoadConfig();
+            Show();
         }
 
         private void 退出ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -196,7 +198,7 @@ namespace AutoVDesktop
         private void OptionView_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            this.Hide();
+            Hide();
             GC.Collect();
         }
 
