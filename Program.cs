@@ -20,7 +20,6 @@ namespace AutoVDesktop
                 Environment.Exit(1);
             }
             dataPath = Path.Combine(path, "Desktops");
-            InitConf(config);
             Process[] processes = Process.GetProcessesByName(Application.CompanyName);
             if (processes.Length > 1)
             {
@@ -34,6 +33,7 @@ namespace AutoVDesktop
             try
             {
                 ApplicationConfiguration.Initialize();
+                InitConf(config);
                 VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
                 {
                     Logger.Debug($"Ïß³Ì{threadID}: ÇĞ»»×ÀÃæ: {oldDesktop.Name} -> {newDesktop.Name}");
@@ -55,7 +55,7 @@ namespace AutoVDesktop
             }
             catch (Exception e)
             {
-                MessageBox.Show("´íÎó", "´íÎó: \n" + e.Message + "\n" + e.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("´íÎó: \n" + e.Message + "\n" + e.StackTrace, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
             }
 

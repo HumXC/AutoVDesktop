@@ -10,7 +10,7 @@
 		<StartupObject>AutoVDesktop.Program</StartupObject>
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
-		<Version>2.0.1</Version>
+		<Version>2.0.2</Version>
 		<PackageLicenseFile>D:\Desktops\Code\DEV\AutoVDesktop\LICENSE</PackageLicenseFile>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<Authors>HumXC</Authors>

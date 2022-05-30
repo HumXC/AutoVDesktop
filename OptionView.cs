@@ -211,7 +211,7 @@ namespace AutoVDesktop
         }
 
         // 鼠标悬浮事件
-        private void Show_MouseHover(Control obj, string msg)
+        private static void Show_MouseHover(Control obj, string msg)
         {
             ToolTip toolTip1 = new()
             {

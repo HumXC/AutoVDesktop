@@ -21,12 +21,12 @@ Quickly change files and ICONS on the desktop after switching virtual desktops�
 一定不要跳过这个
 
 -   程序依赖 .NET 6.0 环境，如果没有则程序会弹出如下提示，点击确定后[跳转到](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0/runtime?cid=getdotnetcore)浏览器下载 Run desktop apps 的运行时(Runtime)：
-    ![.NET6下载页](https://raw.githubusercontent.com/HumXC/AutoVDesktop/main/Readme/dotNET6_download_page.png)
+    ![.NET6下载页](https://files.catbox.moe/58e8ee.png)
 -   该程序只会修改程序目录下的文件，不会删除你的文件。
 -   切换桌面之前刷新桌面可能会导致图标错位。
 -   你有必要知道你的 PC 当前桌面的路径，一般在"C:\用户\用户名\Desktop"，程序运行时创建的桌面文件夹会在默认桌面的父文件夹下。如果你在配置文件里添加了一个"Game"桌面，那么这个桌面的路径就会在"C:\用户\用户名\Game"。
 -   使用之前建议先修改桌面位置到一个单独的目录下，具体方法：[设置桌面路径](https://zhuanlan.zhihu.com/p/78243921)。比如我的将桌面路径设置为“D:\\\\Desktops\Code"那么在切换到 Game 桌面后生成的 Game 桌面文件夹就会在 Code 文件夹的同级目录下:
-    ![设置桌面位置](https://raw.githubusercontent.com/HumXC/AutoVDesktop/main/Readme/setting_desktop_path.png)
+    ![设置桌面位置](https://files.catbox.moe/getpk3.png)
 
 ## 常见问题
 
@@ -48,7 +48,10 @@ Quickly change files and ICONS on the desktop after switching virtual desktops�
 在配置完成之后，就可以开始使用了。
 比如我在程序中添加了 "Desktop" 和 "Game" 两个桌面。
 
+![程序界面](https://files.catbox.moe/aqtpvt.png)
+
 现在按下 win+tab 快捷键打开虚拟桌面界面，新建几个虚拟桌面。因为我在程序中添加了 "Desktop" 和 "Game" 两个虚拟桌面，所以我新建了两个虚拟桌面并且重命名成"Desktop" 和 "Game"。
+![虚拟桌面配置](https://files.catbox.moe/3csl0e.png)
 
 然后就能切换虚拟桌面来体验了。
 
