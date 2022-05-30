@@ -58,8 +58,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label2.Text" xml:space="preserve">
-    <value>此程序代码中用于恢复桌面图标位置的核心代码(IconsRestorer)来自codeproject.com，详情查看此程序的github页。
-程序使用和修改了IconsRestorer的代码，此程序产生的任何问题与IconsRestorer的原作者无关。
+    <value>此程序代码中用于恢复桌面图标位置的核心代码(DesktopRestorer)来自 codeproject.com ，详情查看此程序的 github 页。
+程序使用和修改了 DesktopRestorer 的代码，此程序产生的任何问题与 DesktopRestorer 的原作者无关。
 在使用前务必自己评估此软件的安全性和可靠性，自行承担由于运行此软件对你的计算机系统造成损坏的后果，项目作者(HumXC)不对此负责。
 如果你依旧继续运行此程序，则代表你同意以上内容并对此负责。</value>
   </data>

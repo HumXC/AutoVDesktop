@@ -24,9 +24,9 @@ namespace AutoVDesktop.DesktopRestorer
 
         public NamedDesktopPoint(string name, int x, int y)
         {
-            this.Name = name;
-            this.X = x;
-            this.Y = y;
+            Name = name;
+            X = x;
+            Y = y;
         }
         public override bool Equals([NotNullWhen(true)] object? obj)
         {

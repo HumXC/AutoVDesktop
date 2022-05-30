@@ -16,7 +16,7 @@ namespace AutoVDesktop
         public readonly string confFileName;
         public Config()
         {
-            var path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            var path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             if (path == null)
             {
                 throw new Exception("无法读取程序运行目录");
@@ -40,10 +40,11 @@ namespace AutoVDesktop
             }
         }
 
-        // 从文件加载配置, 或生成一个初始配置
-        public void LoadConfig()
+        // 从文件加载配置, 或生成一个初始配置, 返回配置文件是否存在
+        public bool LoadConfig()
         {
-            if (File.Exists(confFileName))
+            var result = File.Exists(confFileName);
+            if (result)
             {
                 string jsonString = File.ReadAllText(confFileName);
                 try
@@ -51,11 +52,11 @@ namespace AutoVDesktop
                     var c = JsonSerializer.Deserialize<Config>(jsonString);
                     if (c != null)
                     {
-                        this.DebugMode = c.DebugMode;
-                        this.Delay = c.Delay;
-                        this.StartWithWindows = c.StartWithWindows;
-                        this.Desktops = c.Desktops;
-                        this.EnsureRestore = c.EnsureRestore;
+                        DebugMode = c.DebugMode;
+                        Delay = c.Delay;
+                        StartWithWindows = c.StartWithWindows;
+                        Desktops = c.Desktops;
+                        EnsureRestore = c.EnsureRestore;
                     }
 
                 }
@@ -75,6 +76,7 @@ namespace AutoVDesktop
                 };
                 Save();
             }
+            return result;
         }
 
         public void Save()

@@ -8,7 +8,6 @@ namespace AutoVDesktop.VirtualDesktop
     {
         private static readonly WqlEventQuery changedQuery;
         public static Desktop NowDesktop { get; private set; }
-        public static List<Desktop> Desktops { get; private set; } = new();
 
         // 当前桌面改变事件
         public delegate void CurrentChangedHandler(Desktop lastDesktop, Desktop newDesktop);
@@ -25,7 +24,6 @@ namespace AutoVDesktop.VirtualDesktop
         static VirtualDesktop()
         {
             NowDesktop = GetNowDesktop();
-            Desktops = UpdateDesktops();
             // 注册 注册表监听器
             var currentUser = WindowsIdentity.GetCurrent();
 
@@ -34,10 +32,10 @@ namespace AutoVDesktop.VirtualDesktop
                 throw new Exception("无法获取用户信息");
             }
             // 查询当前桌面的更改
-            VirtualDesktop.changedQuery = new WqlEventQuery(string.Format(
-                        "SELECT * FROM RegistryValueChangeEvent WHERE Hive='HKEY_USERS' AND KeyPath='{0}\\\\{1}' AND ValueName='{2}'",
-                currentUser.User.Value, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops".Replace("\\", "\\\\"), "CurrentVirtualDesktop"));
-            var _watcher = new ManagementEventWatcher(VirtualDesktop.changedQuery);
+            changedQuery = new WqlEventQuery(string.Format(
+                         "SELECT * FROM RegistryValueChangeEvent WHERE Hive='HKEY_USERS' AND KeyPath='{0}\\\\{1}' AND ValueName='{2}'",
+                 currentUser.User.Value, @"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops".Replace("\\", "\\\\"), "CurrentVirtualDesktop"));
+            var _watcher = new ManagementEventWatcher(changedQuery);
             // 切换桌面的时候就会触发，但是事件的参数没有什么有价值的内容，所以使用丢弃
             _watcher.EventArrived += (_, _) =>
                     {
@@ -46,35 +44,6 @@ namespace AutoVDesktop.VirtualDesktop
                         VirtualDesktop.EventCurrentChanged?.Invoke(oldDesktop, NowDesktop);
                     };
             _watcher.Start();
-        }
-        static private List<Desktop> UpdateDesktops()
-        {
-            List<Desktop> desktops = new();
-            var guids = GetDeskGuid();
-            foreach (var guid in guids)
-            {
-                desktops.Add(new Desktop(guid));
-            }
-            return desktops;
-        }
-        // 获取所有桌面的GUID
-        static private HashSet<Guid> GetDeskGuid()
-        {
-            HashSet<Guid> HashSet = new();
-            var reg = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops\Desktops");
-            using (reg)
-            {
-                if (reg == null)
-                {
-                    return HashSet;
-                }
-                foreach (string guid in reg.GetSubKeyNames())
-                {
-                    HashSet.Add(Guid.Parse(guid));
-                }
-                return HashSet;
-            }
-
         }
 
         // 获取当前所在的桌面

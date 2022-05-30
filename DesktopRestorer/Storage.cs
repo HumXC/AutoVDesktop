@@ -6,37 +6,6 @@ namespace AutoVDesktop.DesktopRestorer
 {
     internal class Storage
     {
-        // 保存桌面设置和图标位置
-        public static void SaveIconsAndRegistry(IEnumerable<NamedDesktopPoint> iconPositions, IDictionary<string, string> registryValues, string fileName)
-        {
-            Program.Logger.Debug("开始保存图标位置: " + fileName);
-            var xDoc = new XDocument(
-                new XElement("Desktop",
-                    new XElement("Icons",
-                        iconPositions.Select(p => new XElement("Icon",
-                            new XAttribute("x", p.X),
-                            new XAttribute("y", p.Y),
-                            new XText(p.Name)))),
-                    new XElement("Registry",
-                        registryValues.Select(p => new XElement("Value",
-                            new XElement("Name", new XCData(p.Key)),
-                            new XElement("Data", new XCData(p.Value)))))));
-            if (File.Exists(fileName))
-            {
-                File.Delete(fileName);
-            }
-            var dir = Path.GetDirectoryName(fileName);
-            if (dir == null)
-            {
-                throw new Exception("找不到文件的父目录: \n" + fileName);
-            }
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            using Stream outStream = File.OpenWrite(fileName);
-            using var writer = XmlWriter.Create(outStream);
-            xDoc.WriteTo(writer);
-
-        }
-
         // 仅保存图标位置
         public static void SaveIconPositions(IEnumerable<NamedDesktopPoint> iconPositions, string fileName)
         {
@@ -76,20 +45,6 @@ namespace AutoVDesktop.DesktopRestorer
             return xDoc.Root.Element("Icons").Elements("Icon")
                 .Select(el => new NamedDesktopPoint(el.Value, int.Parse(el.Attribute("x").Value), int.Parse(el.Attribute("y").Value)))
                 .ToArray();
-        }
-
-        public static IDictionary<string, string> GetRegistryValues(string fileName)
-        {
-            using var storage = IsolatedStorageFile.GetUserStoreForAssembly();
-            if (storage.FileExists(fileName) == false)
-            { return new Dictionary<string, string>(); }
-
-            using var stream = storage.OpenFile(fileName, FileMode.Open);
-            using var reader = XmlReader.Create(stream);
-            var xDoc = XDocument.Load(reader);
-
-            return xDoc.Root.Element("Registry").Elements("Value")
-                .ToDictionary(el => el.Element("Name").Value, el => el.Element("Data").Value);
         }
     }
 }

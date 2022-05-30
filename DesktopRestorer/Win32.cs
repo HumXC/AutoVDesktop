@@ -263,9 +263,6 @@ namespace AutoVDesktop.DesktopRestorer
 
         [DllImport("Shell32.dll")]
         public static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
-
-        [DllImport("user32.dll")]
-        public static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
     }
 
     // Some Win32 Struct in CSharp

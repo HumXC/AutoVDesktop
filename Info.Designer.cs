@@ -63,7 +63,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei UI", 12.10084F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 27);
+            this.label1.Size = new System.Drawing.Size(54, 28);
             this.label1.TabIndex = 2;
             this.label1.Text = "声明";
             // 
@@ -87,6 +87,8 @@
             this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.linkLabel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Info";
             this.Text = "Info";
             this.ResumeLayout(false);

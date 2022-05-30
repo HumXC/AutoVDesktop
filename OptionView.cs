@@ -167,6 +167,14 @@ namespace AutoVDesktop
 
         }
 
+        private void ShowNotifyIcon_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!showNotifyIcon.Checked)
+            {
+                MessageBox.Show("如果取消此选项，则不会显示通知栏图标。\n如果想关闭程序需要自己打开任务管理器关闭。\n你可以手动编辑程序目录下的config.json文件，将ShowNotifyIcon属性改成true开启此选项。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         // 以下是通知栏图标的相关内容
         private void 选项ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -179,6 +187,12 @@ namespace AutoVDesktop
             System.Environment.Exit(0);
         }
 
+        private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Info().Show();
+        }
+
+
         private void OptionView_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
@@ -186,23 +200,17 @@ namespace AutoVDesktop
             GC.Collect();
         }
 
-        private void ShowNotifyIcon_CheckedChanged(object sender, EventArgs e)
+        private void InputDesktopName_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!showNotifyIcon.Checked)
+            if (e.KeyCode == Keys.Enter)
             {
-                MessageBox.Show("如果取消此选项，则不会显示通知栏图标。\n如果想关闭程序需要自己打开任务管理器关闭。\n你可以手动编辑程序目录下的config.json文件，将ShowNotifyIcon属性改成true开启此选项。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                AddDesktop_Click(sender, e);
             }
         }
 
-        private void 关于ToolStripMenuItem_Click(object sender, EventArgs e)
+        // 鼠标悬浮事件
+        private void Show_MouseHover(Control obj, string msg)
         {
-            new Info().Show();
-        }
-
-        private void DelDesktop_MouseHover(object sender, EventArgs e)
-        {
-
-            // 创建the ToolTip 
             ToolTip toolTip1 = new()
             {
                 // 设置显示样式
@@ -213,16 +221,11 @@ namespace AutoVDesktop
             };
 
             //  设置伴随的对象.
-            toolTip1.SetToolTip(delDesktop, "从这里删除已经添加的桌面不会删除你的任何文件");//设置提示按钮和提示内容
-
+            toolTip1.SetToolTip(obj, msg);//设置提示按钮和提示内容
         }
-
-        private void InputDesktopName_KeyDown(object sender, KeyEventArgs e)
+        private void DelDesktop_MouseHover(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                AddDesktop_Click(sender, e);
-            }
+            Show_MouseHover(delDesktop, "从这里删除桌面不会删除你的任何文件");
         }
     }
 }

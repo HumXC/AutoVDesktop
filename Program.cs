@@ -1,10 +1,9 @@
+using AutoVDesktop.DesktopRestorer;
+using System.Diagnostics;
+using Microsoft.Win32;
+
 namespace AutoVDesktop
 {
-    using System.Threading;
-    using System;
-    using AutoVDesktop.DesktopRestorer;
-    using System.Diagnostics;
-    using Microsoft.Win32;
     internal static class Program
     {
 
@@ -15,28 +14,27 @@ namespace AutoVDesktop
         private static readonly string dataPath;
         static Program()
         {
-            var path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            var path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             if (path == null)
             {
                 MessageBox.Show("错误", "无法读取程序运行目录", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
             }
             dataPath = Path.Combine(path, "Desktops");
+            InitConf(config);
+            Process[] processes = Process.GetProcessesByName(Application.CompanyName);
+            if (processes.Length > 1)
+            {
+                MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
+                Environment.Exit(0);
+            }
         }
         [STAThread]
         static void Main()
         {
             try
             {
-                Process[] processes = System.Diagnostics.Process.GetProcessesByName(Application.CompanyName);
-                if (processes.Length > 1)
-                {
-                    MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
-                    Environment.Exit(0);
-                }
-
                 ApplicationConfiguration.Initialize();
-                InitConf(config);
                 VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
                 {
                     Logger.Debug($"线程{threadID}: 切换桌面: {oldDesktop.Name} -> {newDesktop.Name}");
@@ -116,17 +114,17 @@ namespace AutoVDesktop
                 return;
             }
         }
-        static DesktopRestorer.Desktop SaveDesktop(string desktopName)
+        static Desktop SaveDesktop(string desktopName)
         {
-            var desktop = new DesktopRestorer.Desktop();
+            var desktop = new Desktop();
             var iconPositions = desktop.GetIconsPositions();
             Program.Logger.Debug("开始保存桌面图标位置: " + desktopName);
             Storage.SaveIconPositions(iconPositions, Path.Combine(dataPath, desktopName + ".xml"));
             return desktop;
         }
-        static DesktopRestorer.Desktop SetDesktop(string desktopName)
+        static Desktop SetDesktop(string desktopName)
         {
-            var desktop = new DesktopRestorer.Desktop();
+            var desktop = new Desktop();
             var iconPositions = Storage.GetIconPositions(Path.Combine(dataPath, desktopName + ".xml"));
             Program.Logger.Debug("开始恢复桌面图标位置: " + desktopName);
             if (config.EnsureRestore)
@@ -140,7 +138,10 @@ namespace AutoVDesktop
         //初始化,检查配置文件
         static void InitConf(Config config)
         {
-            config.LoadConfig();
+            if (!config.LoadConfig())
+            {
+                new Info().Show();
+            }
             if (config.DebugMode)
             {
                 Win32.AllocConsole();
@@ -153,7 +154,7 @@ namespace AutoVDesktop
                 MessageBox.Show("错误", "设置自启动失败, 无法打开注册表。", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            var appName = System.Windows.Forms.Application.ExecutablePath;
+            var appName = Application.ExecutablePath;
             if (appName == null)
             {
                 MessageBox.Show("错误", "设置自启动失败, 程序名为 null 。", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -185,7 +186,7 @@ namespace AutoVDesktop
         {
             public static void Debug(string msg)
             {
-                if (config.DebugMode) { System.Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {msg}"); }
+                if (config.DebugMode) { Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] {msg}"); }
             }
         }
     }
