@@ -6,7 +6,7 @@ Quickly change files and ICONS on the desktop after switching virtual desktops�
 
 ## 声明
 
-程序中实现保存和恢复桌面图标功能的代码(DesktopRestorer)来自[此链接](https://www.codeproject.com/Articles/639486/Save-and-Restore-Icon-Positions-on-Desktop?msg=5864404#xx5864404xx)，我修改并使用了此段代码，DesktopRestorer 代码的原作者不需要对此程序产生的任何后果负责。
+程序中实现保存和恢复桌面图标功能的代码(DesktopRestorer)来自[此链接](https://www.codeproject.com/Articles/639486/Save-and-Restore-Icon-Positions-on-Desktop)，我修改并使用了此段代码，DesktopRestorer 代码的原作者不需要对此程序产生的任何后果负责。
 
 ## 使用演示
 
@@ -20,8 +20,6 @@ Quickly change files and ICONS on the desktop after switching virtual desktops�
 
 一定不要跳过这个
 
--   程序依赖 .NET 6.0 环境，如果没有则程序会弹出如下提示，点击确定后[跳转到](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0/runtime?cid=getdotnetcore)浏览器下载 Run desktop apps 的运行时(Runtime)：
-    ![.NET6下载页](https://files.catbox.moe/58e8ee.png)
 -   该程序只会修改程序目录下的文件，不会删除你的文件。
 -   切换桌面之前刷新桌面可能会导致图标错位。
 -   你有必要知道你的 PC 当前桌面的路径，一般在"C:\用户\用户名\Desktop"，程序运行时创建的桌面文件夹会在默认桌面的父文件夹下。如果你在配置文件里添加了一个"Game"桌面，那么这个桌面的路径就会在"C:\用户\用户名\Game"。

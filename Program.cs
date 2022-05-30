@@ -20,7 +20,7 @@ namespace AutoVDesktop
                 Environment.Exit(1);
             }
             dataPath = Path.Combine(path, "Desktops");
-            Process[] processes = Process.GetProcessesByName(Application.CompanyName);
+            Process[] processes = Process.GetProcessesByName(Application.ProductName);
             if (processes.Length > 1)
             {
                 MessageBox.Show("应用程序已经在运行中。。", "提示", MessageBoxButtons.OK);
@@ -32,7 +32,9 @@ namespace AutoVDesktop
         {
             try
             {
-                ApplicationConfiguration.Initialize();
+                Application.SetHighDpiMode(HighDpiMode.SystemAware);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
                 InitConf(config);
                 VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
                 {
@@ -45,7 +47,7 @@ namespace AutoVDesktop
                         }
                         catch (Exception e)
                         {
-                            MessageBox.Show("错误", "切换桌面时出现错误: \n" + e.Message + "\n" + e.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("切换桌面时出现错误: \n" + e.Message + "\n" + e.StackTrace, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             Environment.Exit(1);
                         }
                     });

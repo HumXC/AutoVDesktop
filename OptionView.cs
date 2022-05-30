@@ -56,7 +56,13 @@ namespace AutoVDesktop
             string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             Process p = new();
             p.StartInfo.FileName = "explorer.exe";
-            p.StartInfo.Arguments = Path.GetDirectoryName(path);
+            var dir = Path.GetDirectoryName(path);
+            if (dir == null)
+            {
+                MessageBox.Show("无法获取桌面所在的文件夹: " + path, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            p.StartInfo.Arguments = dir;
             p.Start();
 
         }

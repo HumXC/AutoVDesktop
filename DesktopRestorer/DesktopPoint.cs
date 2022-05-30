@@ -28,6 +28,7 @@ namespace AutoVDesktop.DesktopRestorer
             X = x;
             Y = y;
         }
+
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
             if (obj == null) return false;
@@ -35,6 +36,7 @@ namespace AutoVDesktop.DesktopRestorer
             NamedDesktopPoint other = (NamedDesktopPoint)obj;
             return Name.Equals(other.Name) && X == other.X && Y == other.Y;
         }
+
         public override int GetHashCode()
         {
             return (Name + X.ToString() + Y.ToString()).GetHashCode();
