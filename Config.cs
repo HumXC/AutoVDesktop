@@ -57,6 +57,8 @@ namespace AutoVDesktop
                         StartWithWindows = c.StartWithWindows;
                         Desktops = c.Desktops;
                         EnsureRestore = c.EnsureRestore;
+                        ShowNotifyIcon = c.ShowNotifyIcon;
+                        RestoreDesktop = c.RestoreDesktop;
                     }
 
                 }
