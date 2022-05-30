@@ -39,19 +39,20 @@ namespace AutoVDesktop
                 VirtualDesktop.VirtualDesktop.CurrentChanged += (oldDesktop, newDesktop) =>
                 {
                     Logger.Debug($"线程{threadID}: 切换桌面: {oldDesktop.Name} -> {newDesktop.Name}");
-                    ThreadPool.QueueUserWorkItem((state) =>
-                    {
-                        try
-                        {
-                            ChangeDesktop(newDesktop.Name, threadID);
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show("切换桌面时出现错误: \n" + e.Message + "\n" + e.StackTrace, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Environment.Exit(1);
-                        }
-                    });
+                    new Thread(() =>
+                      {
+                          try
+                          {
+                              ChangeDesktop(newDesktop.Name, threadID);
+                          }
+                          catch (Exception e)
+                          {
+                              MessageBox.Show("切换桌面时出现错误: \n" + e.Message + "\n" + e.StackTrace, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                              Environment.Exit(1);
+                          }
+                      }).Start();
                     ++threadID;
+
                 };
                 Application.Run(new OptionView());
             }
@@ -117,22 +118,23 @@ namespace AutoVDesktop
         }
         static Desktop SaveDesktop(string desktopName)
         {
+            Logger.Debug("开始保存桌面图标位置: " + desktopName);
             var desktop = new Desktop();
             var iconPositions = desktop.GetIconsPositions();
-            Program.Logger.Debug("开始保存桌面图标位置: " + desktopName);
             Storage.SaveIconPositions(iconPositions, Path.Combine(dataPath, desktopName + ".xml"));
             return desktop;
         }
         static Desktop SetDesktop(string desktopName)
         {
+            Logger.Debug("开始恢复桌面图标位置: " + desktopName);
             var desktop = new Desktop();
             var iconPositions = Storage.GetIconPositions(Path.Combine(dataPath, desktopName + ".xml"));
-            Program.Logger.Debug("开始恢复桌面图标位置: " + desktopName);
             if (config.EnsureRestore)
             {
                 desktop.EnsureSetIconPositions(iconPositions);
                 return desktop;
             }
+           
             desktop.SetIconPositions(iconPositions);
             return desktop;
         }

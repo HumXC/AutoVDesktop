@@ -35,10 +35,8 @@ namespace AutoVDesktop.DesktopRestorer
 
         public static IEnumerable<NamedDesktopPoint> GetIconPositions(string fileName)
         {
-            using var storage = IsolatedStorageFile.GetUserStoreForAssembly();
-            if (storage.FileExists(fileName) == false)
+            if (File.Exists(fileName) == false)
             { return Array.Empty<NamedDesktopPoint>(); }
-
             using Stream inStream = File.OpenRead(fileName);
             using var reader = XmlReader.Create(inStream);
             var xDoc = XDocument.Load(reader);
